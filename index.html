@@ -1,1166 +1,1306 @@
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>તીર્થયાત્રા શેડ્યુઅલ (Tirth Yatra Schedule)</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Noto Sans Gujarati & Anek Gujarati -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anek+Gujarati:wght@500;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- SortableJS for Smooth Drag & Drop -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
-    
-    <!-- html2canvas & jsPDF for High Quality Export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>યાત્રા આયોજક - તીર્થસ્થાન શેડ્યુઅલ</title>
 
-    <style>
-        body {
-            font-family: 'Noto Sans Gujarati', sans-serif;
-            background-color: #f5f3ef;
-            color: #1c1917;
-            -webkit-tap-highlight-color: transparent;
-        }
+  <!-- Google Fonts for Gujarati -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;500;600;700;800&family=Noto+Serif+Gujarati:wght@600;700;800&display=swap" rel="stylesheet">
 
-        h1, h2, h3, .font-heading {
-            font-family: 'Anek Gujarati', 'Noto Sans Gujarati', sans-serif;
-        }
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        /* Hide scrollbars for horizontal pill strip */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+  <!-- html2canvas & jsPDF for HD Image and PDF Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-        /* Drag and Drop Styling */
-        .sortable-ghost {
-            opacity: 0.4;
-            background-color: #ffedd5 !important;
-            border: 2px dashed #ea580c !important;
-        }
-        .sortable-drag {
-            background-color: #ffffff !important;
-            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2) !important;
-        }
-        .drag-handle {
-            cursor: grab;
-            touch-action: none;
-        }
-        .drag-handle:active {
-            cursor: grabbing;
-        }
+  <!-- External Tirth List & Images File from GitHub -->
+  <script src="tirth_data.js"></script>
 
-        /* Clean Card Themes */
-        .card-theme-kesari {
-            background: linear-gradient(180deg, #fffdf9 0%, #fff7ed 100%);
-            border: 3px solid #c2410c;
-        }
-        .card-theme-kesari .card-header {
-            background: linear-gradient(135deg, #9a3412 0%, #ea580c 100%);
-            color: #ffffff;
-        }
-        .card-theme-kesari .day-badge {
-            background-color: #c2410c;
-            color: #ffffff;
-        }
-        .card-theme-kesari .day-box {
-            border-color: #fed7aa;
-            background-color: #ffffff;
-        }
+  <style>
+    body {
+      font-family: 'Noto Sans Gujarati', sans-serif;
+      background-color: #f3f4f6;
+      color: #1f2937;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        .card-theme-maroon {
-            background: linear-gradient(180deg, #fffcfc 0%, #fff1f2 100%);
-            border: 3px solid #881337;
-        }
-        .card-theme-maroon .card-header {
-            background: linear-gradient(135deg, #4c0519 0%, #9f1239 100%);
-            color: #ffffff;
-        }
-        .card-theme-maroon .day-badge {
-            background-color: #881337;
-            color: #fef08a;
-        }
-        .card-theme-maroon .day-box {
-            border-color: #fecdd3;
-            background-color: #ffffff;
-        }
+    .font-serif-gu {
+      font-family: 'Noto Serif Gujarati', serif;
+    }
 
-        .card-theme-white {
-            background: #ffffff;
-            border: 2px solid #334155;
-        }
-        .card-theme-white .card-header {
-            background: #1e293b;
-            color: #ffffff;
-        }
-        .card-theme-white .day-badge {
-            background-color: #334155;
-            color: #ffffff;
-        }
-        .card-theme-white .day-box {
-            border-color: #e2e8f0;
-            background-color: #f8fafc;
-        }
-    </style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d97706;
+      border-radius: 4px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Drag and Drop visuals */
+    .dragging {
+      opacity: 0.45;
+      transform: scale(0.98);
+    }
+    .drag-over {
+      border: 2px dashed #ea580c !important;
+      background-color: #fff7ed !important;
+    }
+
+    /* Poster Themes */
+    .theme-saffron {
+      --poster-bg: #fffbf5;
+      --poster-header-bg: linear-gradient(135deg, #c2410c 0%, #ea580c 50%, #f59e0b 100%);
+      --poster-border: #f97316;
+      --poster-day-bg: #ffedd5;
+      --poster-day-text: #9a3412;
+      --poster-card-border: #fed7aa;
+    }
+    .theme-maroon {
+      --poster-bg: #fdf8f8;
+      --poster-header-bg: linear-gradient(135deg, #7f1d1d 0%, #991b1b 60%, #b45309 100%);
+      --poster-border: #991b1b;
+      --poster-day-bg: #fee2e2;
+      --poster-day-text: #7f1d1d;
+      --poster-card-border: #fecaca;
+    }
+    .theme-royal {
+      --poster-bg: #f8fafc;
+      --poster-header-bg: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 60%, #0284c7 100%);
+      --poster-border: #1d4ed8;
+      --poster-day-bg: #dbeafe;
+      --poster-day-text: #1e3a8a;
+      --poster-card-border: #bfdbfe;
+    }
+
+    #poster-canvas {
+      background-color: var(--poster-bg);
+      border-color: var(--poster-border);
+    }
+    .poster-header {
+      background: var(--poster-header-bg);
+    }
+    .poster-day-badge {
+      background-color: var(--poster-day-bg);
+      color: var(--poster-day-text);
+    }
+    .poster-day-box {
+      border-color: var(--poster-card-border);
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col pb-24 lg:pb-8 selection:bg-orange-200 selection:text-orange-950">
+<body class="min-h-screen flex flex-col pb-20 lg:pb-0">
 
-    <!-- ========================================================= -->
-    <!-- TOP HEADER                                                -->
-    <!-- ========================================================= -->
-    <header class="bg-stone-900 text-white shadow-md sticky top-0 z-40 border-b border-orange-500/30">
-        <div class="max-w-7xl mx-auto px-3.5 sm:px-6 py-2.5 sm:py-3 flex justify-between items-center gap-2">
-            <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white shadow-xs shrink-0">
-                    <i class="fa-solid fa-gopuram text-sm"></i>
-                </div>
-                <div class="truncate">
-                    <h1 class="text-base sm:text-xl font-extrabold tracking-wide font-heading leading-tight truncate">તીર્થયાત્રા શેડ્યુઅલ</h1>
-                    <p class="text-[11px] text-stone-400 hidden sm:block">દિવસ પ્રમાણે તીર્થસ્થાનો ગોઠવો અને HD ફોટો / PDF ડાઉનલોડ કરો</p>
-                </div>
-            </div>
+  <!-- Hidden File Input for attaching photo to any Tirth -->
+  <input type="file" id="tirth-photo-input" accept="image/*" class="hidden" onchange="handlePhotoFileSelected(event)" />
 
-            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <button onclick="loadDefaultSchedule()" class="px-2.5 sm:px-3 py-1.5 text-xs bg-stone-800 hover:bg-stone-700 active:scale-95 text-amber-300 rounded-xl border border-stone-700 font-bold transition flex items-center gap-1">
-                    <i class="fa-solid fa-rotate"></i>
-                    <span class="hidden xs:inline">તૈયાર લિસ્ટ</span>
-                </button>
-                <button onclick="clearAllDays()" class="px-2.5 sm:px-3 py-1.5 text-xs bg-red-500/20 hover:bg-red-600 active:scale-95 text-red-200 hover:text-white rounded-xl border border-red-500/30 font-bold transition flex items-center gap-1">
-                    <i class="fa-solid fa-trash-can"></i>
-                    <span>ખાલી કરો</span>
-                </button>
-            </div>
+  <!-- Top Navbar -->
+  <header class="bg-gradient-to-r from-orange-700 via-orange-600 to-amber-600 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🛕</span>
+        <h1 class="font-bold text-lg sm:text-xl tracking-wide font-serif-gu">યાત્રા આયોજક</h1>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Data / GitHub Sync Modal Button -->
+        <button onclick="openDataModal()" class="bg-white/20 hover:bg-white/30 active:bg-white/40 text-white text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition border border-white/30">
+          <span>📁</span>
+          <span>tirth_data.js</span>
+          <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-300"></span>
+        </button>
+
+        <!-- Reset Schedule Button -->
+        <button onclick="resetSchedule()" title="શેડ્યુઅલ ખાલી કરો" class="bg-red-800/50 hover:bg-red-800/70 text-white text-xs sm:text-sm font-semibold px-2.5 py-1.5 rounded-lg transition">
+          રીસેટ
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+    <!-- LEFT COLUMN: EDITOR (Step 1, Step 2, Step 3) -->
+    <div id="mobile-tab-editor" class="lg:col-span-6 space-y-4">
+
+      <!-- Step 1: Total Days Input (Starts at 0, No preset buttons) -->
+      <section class="bg-white rounded-2xl shadow-sm border border-orange-100 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="font-bold text-gray-800 text-base flex items-center gap-1.5">
+              <span class="bg-orange-600 text-white w-6 h-6 rounded-full inline-flex items-center justify-center text-xs font-bold">૧</span>
+              <span>યાત્રાના કુલ દિવસો</span>
+            </h2>
+            <p class="text-xs text-gray-500 mt-0.5">દિવસોની સંખ્યા લખો એટલે ખાના તૈયાર થશે</p>
+          </div>
+
+          <div class="flex items-center gap-2 bg-orange-50 p-1.5 rounded-xl border border-orange-200">
+            <button onclick="changeTotalDays(-1)" class="w-10 h-10 rounded-lg bg-white text-orange-700 font-bold text-xl shadow-sm hover:bg-orange-100 active:scale-95 transition flex items-center justify-center">
+              −
+            </button>
+            <input
+              type="number"
+              id="total-days-input"
+              min="0"
+              max="60"
+              value="0"
+              placeholder="0"
+              onchange="setTotalDays(this.value)"
+              onkeyup="setTotalDays(this.value)"
+              class="w-16 h-10 text-center font-extrabold text-xl text-orange-900 bg-white border border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+            <button onclick="changeTotalDays(1)" class="w-10 h-10 rounded-lg bg-orange-600 text-white font-bold text-xl shadow-sm hover:bg-orange-700 active:scale-95 transition flex items-center justify-center">
+              +
+            </button>
+          </div>
         </div>
-    </header>
+      </section>
 
-    <!-- ========================================================= -->
-    <!-- STICKY ACTIVE DAY BAR (SUPER EASY FOR MOBILE THUMB)       -->
-    <!-- ========================================================= -->
-    <div id="stickyDayBar" class="sticky top-[53px] sm:top-[61px] z-30 bg-white/95 backdrop-blur-md border-b border-orange-200 shadow-xs">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2">
-            <div class="flex items-center justify-between gap-2 mb-1.5">
-                <span class="text-[11px] sm:text-xs font-extrabold text-stone-600 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-orange-600 animate-pulse"></span>
-                    <span>કયા દિવસમાં તીર્થ ઉમેરવું છે? ટેપ કરો:</span>
-                </span>
-                <span id="activeDayIndicatorBadge" class="text-[11px] font-extrabold bg-orange-100 text-orange-800 border border-orange-300 px-2.5 py-0.5 rounded-lg">
-                    દિવસ ૧ પસંદ કરેલ
-                </span>
-            </div>
-            <!-- Horizontal Scrollable Pills on Mobile -->
-            <div id="daySelectorPills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-                <!-- Populated by JS -->
-            </div>
+      <!-- Sticky Day Selector Bar (Visible when days > 0) -->
+      <div id="sticky-day-selector-wrapper" class="hidden sticky top-14 z-30 bg-gray-100/95 backdrop-blur-sm py-2 -mx-3 px-3 sm:mx-0 sm:px-0">
+        <div class="bg-white rounded-xl shadow-sm border border-orange-200 p-2.5">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-orange-800">કયા દિવસમાં તીર્થ ઉમેરવું છે તે પસંદ કરો:</span>
+            <span id="active-day-label" class="text-xs font-extrabold bg-orange-100 text-orange-800 px-2 py-0.5 rounded-md">દિવસ ૧ પસંદ છે</span>
+          </div>
+          <div id="day-pills-container" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
+            <!-- Day pills injected here -->
+          </div>
         </div>
+      </div>
+
+      <!-- Step 2: Alphabetical Tirth List (No Categories) + User Added Tirth List -->
+      <section class="bg-white rounded-2xl shadow-sm border border-orange-100 p-4 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h2 class="font-bold text-gray-800 text-base flex items-center gap-1.5">
+            <span class="bg-orange-600 text-white w-6 h-6 rounded-full inline-flex items-center justify-center text-xs font-bold">૨</span>
+            <span>તીર્થસ્થાનોનું લિસ્ટ (કક્કાવારી પ્રમાણે)</span>
+          </h2>
+
+          <!-- Search Box -->
+          <div class="relative w-full sm:w-52">
+            <input
+              type="text"
+              id="tirth-search"
+              oninput="renderTirthLists()"
+              placeholder="🔍 તીર્થ શોધો..."
+              class="w-full text-sm pl-3 pr-8 py-1.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+            />
+            <button onclick="document.getElementById('tirth-search').value=''; renderTirthLists();" class="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600 text-xs">✕</button>
+          </div>
+        </div>
+
+        <!-- Master Alphabetical Grid -->
+        <div id="master-tirth-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <!-- Alphabetical Tirth items injected here -->
+        </div>
+
+        <!-- Separate Section: User Added Tirths -->
+        <div class="pt-3 border-t border-dashed border-orange-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-sm text-amber-900 flex items-center gap-1.5">
+              <span>✨</span>
+              <span>યુઝરે ઉમેરેલા નવા તીર્થસ્થાનો (અલગ લિસ્ટ)</span>
+            </h3>
+            <span id="user-tirth-count" class="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">0</span>
+          </div>
+
+          <!-- Add New Custom Tirth Form -->
+          <div class="flex flex-col sm:flex-row gap-2 bg-amber-50/70 p-2.5 rounded-xl border border-amber-200">
+            <input
+              type="text"
+              id="new-tirth-name"
+              placeholder="નવું તીર્થસ્થાન નામ લખો..."
+              onkeypress="if(event.key==='Enter') addNewUserTirth()"
+              class="flex-1 text-sm px-3 py-2 bg-white border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+            <div class="flex gap-2">
+              <label class="cursor-pointer bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 whitespace-nowrap">
+                <span>📷</span>
+                <span id="new-tirth-photo-label">ફોટો</span>
+                <input type="file" id="new-tirth-photo" accept="image/*" class="hidden" onchange="previewNewTirthPhoto(event)" />
+              </label>
+              <button
+                onclick="addNewUserTirth()"
+                class="bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-bold text-sm px-4 py-2 rounded-lg shadow-sm transition whitespace-nowrap"
+              >
+                + ઉમેરો
+              </button>
+            </div>
+          </div>
+
+          <!-- User Added Tirths Grid -->
+          <div id="user-tirth-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <!-- User added tirths injected here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 3: Day-by-Day Schedule Arrangement -->
+      <section class="bg-white rounded-2xl shadow-sm border border-orange-100 p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-gray-800 text-base flex items-center gap-1.5">
+            <span class="bg-orange-600 text-white w-6 h-6 rounded-full inline-flex items-center justify-center text-xs font-bold">૩</span>
+            <span>દિવસ પ્રમાણે ક્રમ ગોઠવો</span>
+          </h2>
+          <span class="text-xs text-gray-500">ખેંચીને (Drag) કે એરોથી ક્રમ બદલો</span>
+        </div>
+
+        <div id="days-editor-container" class="space-y-3">
+          <!-- Empty state when days == 0 -->
+          <div class="text-center py-8 px-4 bg-orange-50/50 rounded-xl border border-dashed border-orange-200">
+            <div class="text-3xl mb-2">🗓️</div>
+            <p class="text-sm font-semibold text-gray-700">હજુ કોઈ દિવસ પસંદ કરેલ નથી</p>
+            <p class="text-xs text-gray-500 mt-1">ઉપર સ્ટેપ-૧ માં યાત્રાના કુલ દિવસો લખો એટલે અહીં દિવસ પ્રમાણે ખાના ખૂલી જશે.</p>
+          </div>
+        </div>
+      </section>
+
     </div>
 
-    <!-- ========================================================= -->
-    <!-- MAIN WORKSPACE                                            -->
-    <!-- ========================================================= -->
-    <main class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-grow">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <!-- RIGHT COLUMN: LIVE POSTER PREVIEW & DOWNLOAD -->
+    <div id="mobile-tab-preview" class="hidden lg:block lg:col-span-6 space-y-4">
 
-            <!-- ===================================================== -->
-            <!-- LEFT / TAB 1: EDITOR VIEW (7 COLUMNS ON DESKTOP)      -->
-            <!-- ===================================================== -->
-            <div id="mobileTabEditor" class="lg:col-span-7 space-y-4 sm:space-y-5">
+      <!-- Poster Controls Card -->
+      <div class="bg-white rounded-2xl shadow-sm border border-orange-100 p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <input
+            type="text"
+            id="yatra-title-input"
+            value="પવિત્ર તીર્થ યાત્રા કાર્યક્રમ"
+            oninput="renderPoster()"
+            placeholder="યાત્રાનું શીર્ષક લખો..."
+            class="font-bold text-base text-gray-800 border-b-2 border-orange-300 focus:border-orange-600 focus:outline-none px-1 py-0.5 flex-1 min-w-[200px]"
+          />
 
-                <!-- 1. STEP 1: TOTAL DAYS GENERATOR & TITLE -->
-                <div class="bg-white rounded-2xl shadow-xs border-2 border-orange-200/80 overflow-hidden">
-                    <div class="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-3.5 sm:px-4 py-2.5 flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-white text-orange-700 font-extrabold text-[11px] px-2 py-0.5 rounded-md">સ્ટેપ ૧</span>
-                            <h2 class="text-sm sm:text-base font-extrabold tracking-wide">યાત્રા કેટલા દિવસની છે?</h2>
-                        </div>
-                        <span id="totalDaysBadgeHeader" class="text-xs font-extrabold bg-black/20 px-2.5 py-0.5 rounded-lg">કુલ ૮ દિવસ</span>
-                    </div>
-
-                    <div class="p-3.5 sm:p-4 space-y-3.5">
-                        <!-- Stepper Row -->
-                        <div class="flex items-center justify-between gap-2 bg-orange-50/60 border border-orange-200/80 rounded-xl p-2.5 sm:p-3">
-                            <div class="min-w-0">
-                                <div class="text-xs sm:text-sm font-extrabold text-stone-800">કુલ દિવસોની સંખ્યા:</div>
-                                <div class="text-[11px] text-stone-500">આપોઆપ દિવસોના ખાના બની જશે</div>
-                            </div>
-
-                            <div class="flex items-center gap-1.5 shrink-0">
-                                <button onclick="adjustTotalDays(-1)" class="w-10 h-10 rounded-xl bg-white hover:bg-orange-100 active:scale-90 text-stone-800 font-extrabold border border-stone-300 shadow-2xs flex items-center justify-center transition">
-                                    <i class="fa-solid fa-minus text-xs"></i>
-                                </button>
-                                <input type="number" id="totalDaysInput" min="1" max="60" value="8"
-                                    onchange="setExactTotalDays(this.value)"
-                                    class="w-14 sm:w-16 h-10 text-center font-extrabold text-base sm:text-lg text-orange-700 bg-white border-2 border-orange-400 rounded-xl outline-none">
-                                <button onclick="adjustTotalDays(1)" class="w-10 h-10 rounded-xl bg-white hover:bg-orange-100 active:scale-90 text-stone-800 font-extrabold border border-stone-300 shadow-2xs flex items-center justify-center transition">
-                                    <i class="fa-solid fa-plus text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Quick Day Count Presets (Horizontal Scroll on Phone) -->
-                        <div>
-                            <div class="text-[11px] font-bold text-stone-500 mb-1.5">ઝડપી દિવસ પસંદગી:</div>
-                            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-                                <button onclick="setExactTotalDays(3)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૩ દિવસ</button>
-                                <button onclick="setExactTotalDays(5)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૫ દિવસ</button>
-                                <button onclick="setExactTotalDays(7)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૭ દિવસ</button>
-                                <button onclick="setExactTotalDays(8)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૮ દિવસ</button>
-                                <button onclick="setExactTotalDays(10)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૧૦ દિવસ</button>
-                                <button onclick="setExactTotalDays(12)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૧૨ દિવસ</button>
-                                <button onclick="setExactTotalDays(15)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૧૫ દિવસ</button>
-                            </div>
-                        </div>
-
-                        <!-- Title & Optional Start Date -->
-                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2.5 border-t border-stone-100 items-end">
-                            <div class="sm:col-span-6">
-                                <label class="block text-[11px] font-bold text-stone-600 mb-1">યાત્રાનું શીર્ષક (Title)</label>
-                                <input type="text" id="titleInput" oninput="updateHeaderState()" placeholder="તીર્થયાત્રા સમયપત્રક"
-                                    class="w-full px-3 py-2.5 rounded-xl border border-stone-300 focus:border-orange-500 outline-none font-bold text-sm text-stone-900 bg-stone-50/50 focus:bg-white">
-                            </div>
-                            <div class="grid grid-cols-12 gap-2 sm:col-span-6 items-end">
-                                <div class="col-span-7">
-                                    <label class="block text-[11px] font-bold text-stone-600 mb-1">શરૂઆતની તારીખ (ઓપ્શનલ)</label>
-                                    <input type="date" id="startDateInput" onchange="updateStartDate()"
-                                        class="w-full px-2.5 py-2 rounded-xl border border-stone-300 focus:border-orange-500 outline-none text-xs sm:text-sm font-semibold bg-stone-50/50">
-                                </div>
-                                <div class="col-span-5">
-                                    <label class="flex items-center justify-center gap-1.5 cursor-pointer bg-stone-100 hover:bg-stone-200 px-2.5 py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-700 select-none">
-                                        <input type="checkbox" id="showDateToggle" onchange="updateHeaderState()" class="accent-orange-600 w-4 h-4">
-                                        <span>તારીખ બતાવો</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. STEP 2: TOUCH-FRIENDLY 2-COLUMN TIRTH BANK -->
-                <div class="bg-white rounded-2xl shadow-xs border border-stone-200 overflow-hidden">
-                    <div class="bg-stone-900 text-white px-3.5 sm:px-4 py-2.5 flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-orange-500 text-white font-extrabold text-[11px] px-2 py-0.5 rounded-md">સ્ટેપ ૨</span>
-                            <h2 class="text-sm sm:text-base font-extrabold">તીર્થસ્થાન પર ટચ કરીને ઉમેરો</h2>
-                        </div>
-                        <span id="step2TargetDayLabel" class="text-[11px] font-bold text-amber-300">→ દિવસ ૧ માં ઉમેરાશે</span>
-                    </div>
-
-                    <div class="p-3.5 sm:p-4 space-y-4">
-                        <!-- Group A: Main Requested Tirths (2-Column Grid on Phone, 3-4 on Desktop) -->
-                        <div>
-                            <div class="text-xs font-extrabold text-stone-600 mb-2 flex items-center justify-between">
-                                <span>🚩 મુખ્ય તીર્થસ્થાનો:</span>
-                                <span class="text-[11px] font-semibold text-stone-400">ટચ કરો એટલે ઉમેરાઈ જશે</span>
-                            </div>
-                            <div id="mainTirthChips" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                                <!-- Populated by JS -->
-                            </div>
-                        </div>
-
-                        <!-- Group B: Char Dham Tirths -->
-                        <div class="pt-3 border-t border-stone-100">
-                            <div class="text-xs font-extrabold text-stone-600 mb-2">
-                                <span>⛰️ ચાર ધામ અને અન્ય તીર્થસ્થાનો:</span>
-                            </div>
-                            <div id="charDhamChips" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                                <!-- Populated by JS -->
-                            </div>
-                        </div>
-
-                        <!-- Group C: Add Custom Tirth Name -->
-                        <div class="pt-3 border-t border-stone-100 flex gap-2">
-                            <input type="text" id="customTirthInput" placeholder="બીજું કોઈ તીર્થસ્થાનનું નામ લખો..."
-                                onkeydown="if(event.key==='Enter') addCustomTirth()"
-                                class="flex-grow px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-orange-500 outline-none text-xs sm:text-sm font-bold bg-stone-50 focus:bg-white">
-                            <button onclick="addCustomTirth()" class="px-4 py-2.5 bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shrink-0 flex items-center gap-1.5 shadow-xs">
-                                <i class="fa-solid fa-plus"></i>
-                                <span>ઉમેરો</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. STEP 3: DAY-WISE SCHEDULE ORGANIZER -->
-                <div class="space-y-3">
-                    <div class="flex flex-wrap justify-between items-center gap-2 px-1">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <span class="bg-stone-800 text-white font-extrabold text-[11px] px-2 py-0.5 rounded-md">સ્ટેપ ૩</span>
-                                <h2 class="text-sm sm:text-base font-extrabold text-stone-800">દિવસ પ્રમાણે ગોઠવણી (ક્રમ બદલો / સુધારો)</h2>
-                            </div>
-                            <p class="text-[11px] text-stone-500 mt-0.5">તીર્થનું નામ બદલવા તેના પર ટચ કરો અથવા ↑ ↓ બટનથી ક્રમ ગોઠવો</p>
-                        </div>
-                        <button onclick="addNewDay()" class="px-3.5 py-2 bg-stone-900 hover:bg-orange-600 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-plus"></i>
-                            <span>+ ૧ દિવસ વધારો</span>
-                        </button>
-                    </div>
-
-                    <!-- Days Container -->
-                    <div id="daysBuilderContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <!-- Rendered by JS -->
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- ===================================================== -->
-            <!-- RIGHT / TAB 2: PREVIEW & DOWNLOAD (5 COLS ON DESKTOP) -->
-            <!-- ===================================================== -->
-            <div id="mobileTabPreview" class="hidden lg:block lg:col-span-5 lg:sticky lg:top-28 space-y-4">
-
-                <!-- Controls & Big Download Card -->
-                <div class="bg-white rounded-2xl shadow-xs border border-stone-200 p-3.5 sm:p-4 space-y-3.5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs sm:text-sm font-extrabold text-stone-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-download text-orange-600"></i>
-                            <span>હાઈ-ક્વોલિટી ડાઉનલોડ:</span>
-                        </span>
-                        <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                            HD Print Ready
-                        </span>
-                    </div>
-
-                    <!-- Big Thumb-Friendly Download Buttons -->
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <button id="btnDownloadPng" onclick="downloadPhoto()" class="py-3 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-sm transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-image text-base"></i>
-                            <span>HD ફોટો (PNG)</span>
-                        </button>
-                        <button id="btnDownloadPdf" onclick="downloadPDF()" class="py-3 px-3 bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-sm transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-file-pdf text-base"></i>
-                            <span>PDF ડાઉનલોડ</span>
-                        </button>
-                    </div>
-
-                    <!-- Style & Layout Switches -->
-                    <div class="grid grid-cols-3 gap-2 pt-2 border-t border-stone-100 text-xs">
-                        <div>
-                            <label class="block text-[10px] sm:text-[11px] font-bold text-stone-500 mb-1">લેઆઉટ (દેખાવ):</label>
-                            <div class="grid grid-cols-2 gap-1">
-                                <button onclick="setLayout('table')" id="btnLayout_table" class="py-1.5 px-1.5 rounded-lg font-bold border text-[11px]">ટેબલ</button>
-                                <button onclick="setLayout('cards')" id="btnLayout_cards" class="py-1.5 px-1.5 rounded-lg font-bold border text-[11px]">બોક્સ</button>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] sm:text-[11px] font-bold text-stone-500 mb-1">કલર થીમ:</label>
-                            <div class="grid grid-cols-3 gap-1">
-                                <button onclick="setTheme('kesari')" id="btnTheme_kesari" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">કેસરી</button>
-                                <button onclick="setTheme('maroon')" id="btnTheme_maroon" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">મરૂન</button>
-                                <button onclick="setTheme('white')" id="btnTheme_white" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">સિમ્પલ</button>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] sm:text-[11px] font-bold text-stone-500 mb-1">અક્ષર સાઈઝ:</label>
-                            <div class="grid grid-cols-3 gap-1">
-                                <button onclick="setFontSize('sm')" id="btnFont_sm" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">નાના</button>
-                                <button onclick="setFontSize('md')" id="btnFont_md" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">મધ્યમ</button>
-                                <button onclick="setFontSize('lg')" id="btnFont_lg" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">મોટા</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===================================================== -->
-                <!-- EXPORTABLE SCHEDULE CARD (CLEAN & RESPONSIVE)         -->
-                <!-- ===================================================== -->
-                <div class=" pb-4">
-                    <div id="scheduleExportCanvas" class="card-theme-kesari rounded-2xl shadow-xl p-4 sm:p-6 mx-auto w-full">
-                        
-                        <!-- Clean Header -->
-                        <div class="card-header rounded-xl py-3 sm:py-3.5 px-4 text-center shadow-xs mb-3.5 sm:mb-4">
-                            <h2 id="previewTitleText" class="text-lg sm:text-2xl font-extrabold tracking-wide font-heading">
-                                તીર્થયાત્રા સમયપત્રક
-                            </h2>
-                        </div>
-
-                        <!-- Clean Schedule Content (Table or Day Boxes) -->
-                        <div id="previewScheduleContent">
-                            <!-- Rendered by JS -->
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
+          <!-- Toggle Photos in Card -->
+          <label class="inline-flex items-center gap-2 cursor-pointer bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200">
+            <input type="checkbox" id="show-photos-toggle" checked onchange="renderPoster()" class="w-4 h-4 accent-orange-600 rounded" />
+            <span class="text-xs font-bold text-orange-900">🖼️ કાર્ડમાં ફોટા બતાવો</span>
+          </label>
         </div>
-    </main>
 
-    <!-- ========================================================= -->
-    <!-- MOBILE BOTTOM NAVIGATION BAR (ONLY ON PHONE/TABLET)       -->
-    <!-- ========================================================= -->
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-stone-200 shadow-[0_-8px_20px_-4px_rgba(0,0,0,0.1)] px-3 py-2">
-        <div class="max-w-md mx-auto grid grid-cols-2 gap-2.5">
-            <button id="mobileNavBtnEditor" onclick="switchMobileTab('editor')"
-                class="py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-orange-600 text-white shadow-xs">
-                <i class="fa-solid fa-list-check"></i>
-                <span>૧. યાત્રા ગોઠવો</span>
-            </button>
-            <button id="mobileNavBtnPreview" onclick="switchMobileTab('preview')"
-                class="py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-stone-100 text-stone-800 border border-stone-300">
-                <i class="fa-solid fa-eye"></i>
-                <span>૨. કાર્ડ / ડાઉનલોડ</span>
-                <span id="mobileTotalTirthBadge" class="px-1.5 py-0.2 text-[11px] rounded-full bg-orange-100 text-orange-800 font-extrabold">૦</span>
-            </button>
+        <!-- Theme & Layout Selectors -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <!-- Themes -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs text-gray-500 font-semibold">રંગ:</span>
+            <button onclick="setPosterTheme('theme-saffron')" class="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-600 to-amber-400 border-2 border-white ring-2 ring-orange-500" title="કેસરી"></button>
+            <button onclick="setPosterTheme('theme-maroon')" class="w-6 h-6 rounded-full bg-gradient-to-tr from-red-900 to-red-600 border-2 border-white ring-1 ring-gray-300" title="મરૂન"></button>
+            <button onclick="setPosterTheme('theme-royal')" class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-900 to-sky-500 border-2 border-white ring-1 ring-gray-300" title="રોયલ બ્લુ"></button>
+          </div>
+
+          <!-- Layout Toggle -->
+          <div class="flex bg-gray-100 p-0.5 rounded-lg text-xs font-semibold">
+            <button id="btn-layout-cards" onclick="setPosterLayout('cards')" class="px-2.5 py-1 rounded-md bg-white text-orange-700 shadow-sm">બોક્સ વ્યૂ</button>
+            <button id="btn-layout-table" onclick="setPosterLayout('table')" class="px-2.5 py-1 rounded-md text-gray-600">કોષ્ટક વ્યૂ</button>
+          </div>
         </div>
-    </nav>
 
-    <!-- TOAST MESSAGE (ABOVE MOBILE NAV) -->
-    <div id="toastMsg" class="fixed bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 bg-stone-900/95 text-white px-4 py-2.5 rounded-xl shadow-xl text-xs sm:text-sm font-bold z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none whitespace-nowrap border border-stone-700">
-        <span id="toastText"></span>
+        <!-- Download Buttons -->
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
+          <button
+            onclick="downloadHDImage()"
+            id="btn-download-png"
+            class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-98 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 text-sm transition"
+          >
+            <span>📸</span>
+            <span>HD ફોટો (PNG)</span>
+          </button>
+
+          <button
+            onclick="downloadPDF()"
+            id="btn-download-pdf"
+            class="bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 active:scale-98 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 text-sm transition"
+          >
+            <span>📄</span>
+            <span>PDF ડાઉનલોડ</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- POSTER PREVIEW AREA -->
+      <div class="overflow-x-auto pb-4 flex justify-center">
+        <div id="poster-canvas" class="theme-saffron w-full max-w-[650px] rounded-2xl border-4 shadow-xl overflow-hidden transition-all">
+          <!-- Poster Header -->
+          <div class="poster-header text-white py-5 px-6 text-center relative">
+            <div class="text-xs tracking-widest uppercase opacity-90 mb-1">॥ શ્રી ગણેશાય નમઃ ॥</div>
+            <h2 id="poster-title-display" class="font-serif-gu font-extrabold text-2xl sm:text-3xl tracking-wide drop-shadow">
+              પવિત્ર તીર્થ યાત્રા કાર્યક્રમ
+            </h2>
+            <div id="poster-subtitle-display" class="mt-1.5 inline-block bg-black/20 px-3 py-0.5 rounded-full text-xs font-semibold">
+              કુલ ૦ દિવસની યાત્રા
+            </div>
+          </div>
+
+          <!-- Poster Body -->
+          <div id="poster-body" class="p-4 sm:p-6 space-y-3 min-h-[260px]">
+            <div class="text-center py-12 text-gray-400 text-sm">
+              દિવસો પસંદ કરી તીર્થસ્થાનો ઉમેરશો એટલે અહીં સુંદર શેડ્યુઅલ કાર્ડ તૈયાર થશે.
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
+  </main>
 
-    <script>
-        // 1. SPECIFICALLY REQUESTED TIRTH STHANS
-        const MAIN_TIRTH_LIST = [
-            "ગોકુળ",
-            "મથુરા",
-            "વૃંદાવન",
-            "ચિત્રકૂટ",
-            "પ્રયાગરાજ",
-            "કાશી",
-            "પોખરા",
-            "કાઠમંડુ",
-            "છપૈયા",
-            "અયોધ્યા",
-            "નૈમિષારણ્ય",
-            "પુષ્કર",
-            "નાથદ્વારા",
-            "ખાણ ગામ"
-        ];
+  <!-- MOBILE BOTTOM NAVIGATION BAR -->
+  <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] z-40 grid grid-cols-2 h-16">
+    <button
+      id="nav-btn-editor"
+      onclick="switchMobileTab('editor')"
+      class="flex flex-col items-center justify-center gap-0.5 text-orange-600 font-bold border-t-2 border-orange-600 bg-orange-50/50"
+    >
+      <span class="text-lg">📝</span>
+      <span class="text-xs">૧. યાત્રા ગોઠવો</span>
+    </button>
+    <button
+      id="nav-btn-preview"
+      onclick="switchMobileTab('preview')"
+      class="flex flex-col items-center justify-center gap-0.5 text-gray-500 font-semibold border-t-2 border-transparent"
+    >
+      <span class="text-lg">🖼️</span>
+      <span class="text-xs">૨. કાર્ડ / ડાઉનલોડ</span>
+    </button>
+  </nav>
 
-        const CHAR_DHAM_LIST = [
-            "યમુનોત્રી",
-            "ગંગોત્રી",
-            "કેદારનાથ",
-            "બદ્રીનાથ",
-            "હરિદ્વાર",
-            "ઋષિકેશ",
-            "જગન્નાથપુરી",
-            "રામેશ્વરમ",
-            "દ્વારકા"
-        ];
+  <!-- MODAL: tirth_data.js & GitHub Sync -->
+  <div id="data-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2">
+          <span>📁</span>
+          <span>tirth_data.js ફાઈલ મેનેજમેન્ટ</span>
+        </h3>
+        <button onclick="closeDataModal()" class="text-gray-400 hover:text-gray-700 text-xl font-bold">✕</button>
+      </div>
 
-        const GUJ_DIGITS = ['૦', '૧', '૨', '૩', '૪', '૫', '૬', '૭', '૮', '૯'];
-        function toGujNum(n) {
-            return String(n).split('').map(c => (c >= '0' && c <= '9') ? GUJ_DIGITS[parseInt(c)] : c).join('');
+      <p class="text-xs text-gray-600 leading-relaxed">
+        આ વેબ એપ તમારા GitHub રિપોઝિટરીમાં રહેલી <b><code>tirth_data.js</code></b> ફાઈલ અને <b><code>images/</code></b> ફોલ્ડરમાંથી તીર્થસ્થાનોના નામ તથા ફોટા વાંચે છે. નવા ઉમેરેલા તીર્થસ્થાનો ફાઈલમાં સેવ કરવા નીચેના વિકલ્પો વાપરો:
+      </p>
+
+      <!-- Option 1: Download Updated tirth_data.js -->
+      <div class="bg-orange-50 border border-orange-200 rounded-xl p-3.5 space-y-2">
+        <div class="font-bold text-sm text-orange-900">૧. અપડેટ થયેલી tirth_data.js ફાઈલ ડાઉનલોડ કરો</div>
+        <p class="text-xs text-orange-800">નવા ઉમેરેલા તીર્થસ્થાનો અને ફોટા સાથેની તૈયાર ફાઈલ ડાઉનલોડ કરીને GitHub માં મૂકો.</p>
+        <button onclick="downloadTirthDataJS()" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow-sm transition">
+          ⬇️ tirth_data.js ડાઉનલોડ કરો
+        </button>
+      </div>
+
+      <!-- Option 2: Direct Local File Link (File System Access API) -->
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-3.5 space-y-2">
+        <div class="font-bold text-sm text-blue-900">૨. કોમ્પ્યુટરની લોકલ ફાઈલ સાથે સીધું લિંક કરો</div>
+        <p class="text-xs text-blue-800">એકવાર તમારા PC માં રહેલી <code>tirth_data.js</code> પસંદ કરશો એટલે નવું નામ ઉમેરતા જ તેમાં ઓટોમેટિક સેવ થશે.</p>
+        <button onclick="linkLocalTirthFile()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow-sm transition">
+          🔗 લોકલ tirth_data.js ફાઈલ સિલેક્ટ કરો
+        </button>
+        <div id="local-file-status" class="text-[11px] font-semibold text-blue-700"></div>
+      </div>
+
+      <!-- Option 3: Direct GitHub Auto-Commit -->
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-2">
+        <div class="font-bold text-sm text-gray-800">૩. સીધું GitHub રિપોઝિટરીમાં ઓટો-સેવ (વૈકલ્પિક)</div>
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" id="gh-owner" placeholder="GitHub Username" class="text-xs p-2 border rounded-lg bg-white" />
+          <input type="text" id="gh-repo" placeholder="Repository Name" class="text-xs p-2 border rounded-lg bg-white" />
+        </div>
+        <input type="password" id="gh-token" placeholder="GitHub Personal Access Token (ghp_...)" class="w-full text-xs p-2 border rounded-lg bg-white" />
+        <button onclick="saveGitHubConfig()" class="w-full bg-gray-800 hover:bg-black text-white font-bold text-xs py-2 px-4 rounded-lg transition">
+          💾 GitHub સેટિંગ્સ સેવ કરો અને સિંક કરો
+        </button>
+        <div id="gh-sync-status" class="text-[11px] font-semibold text-emerald-700"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50 whitespace-nowrap">
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. DEFAULT FALLBACK LIST (If tirth_data.js not loaded yet)
+    // ==========================================
+    const FALLBACK_MASTER_LIST = [
+      { name: "અયોધ્યા", image: "images/ayodhya.jpg" },
+      { name: "ઋષિકેશ", image: "images/rishikesh.jpg" },
+      { name: "કાઠમંડુ", image: "images/kathmandu.jpg" },
+      { name: "કાશી", image: "images/kashi.jpg" },
+      { name: "કેદારનાથ", image: "images/kedarnath.jpg" },
+      { name: "ખાણ ગામ", image: "images/khangam.jpg" },
+      { name: "ગંગોત્રી", image: "images/gangotri.jpg" },
+      { name: "ગોકુળ", image: "images/gokul.jpg" },
+      { name: "ચિત્રકૂટ", image: "images/chitrakoot.jpg" },
+      { name: "છપૈયા", image: "images/chhapaiya.jpg" },
+      { name: "જગન્નાથપુરી", image: "images/jagannathpuri.jpg" },
+      { name: "દ્વારકા", image: "images/dwarka.jpg" },
+      { name: "નાથદ્વારા", image: "images/nathdwara.jpg" },
+      { name: "નૈમિષારણ્ય", image: "images/naimisharanya.jpg" },
+      { name: "પુષ્કર", image: "images/pushkar.jpg" },
+      { name: "પોખરા", image: "images/pokhara.jpg" },
+      { name: "પ્રયાગરાજ", image: "images/prayagraj.jpg" },
+      { name: "બદ્રીનાથ", image: "images/badrinath.jpg" },
+      { name: "મથુરા", image: "images/mathura.jpg" },
+      { name: "યમુનોત્રી", image: "images/yamunotri.jpg" },
+      { name: "રામેશ્વરમ", image: "images/rameswaram.jpg" },
+      { name: "વૃંદાવન", image: "images/vrindavan.jpg" },
+      { name: "હરિદ્વાર", image: "images/haridwar.jpg" }
+    ];
+
+    // ==========================================
+    // 2. APPLICATION STATE (Starts with 0 days, no default selection)
+    // ==========================================
+    let masterTirths = [];
+    let userAddedTirths = [];
+    let totalDays = 0;
+    let activeDayIndex = 0; // 0-based index when totalDays > 0
+    let schedule = []; // Array of arrays: [ [{name, image}], ... ]
+    let posterTheme = 'theme-saffron';
+    let posterLayout = 'cards'; // 'cards' or 'table'
+
+    let newTirthTempPhotoBase64 = "";
+    let targetPhotoEdit = null; // { listType: 'master'|'user', name: string }
+    let localFileHandle = null;
+
+    // Gujarati Collator for strict alphabetical order
+    const guCollator = new Intl.Collator('gu');
+
+    // ==========================================
+    // 3. INITIALIZATION
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadTirthDatabase();
+      loadGitHubConfigToInputs();
+      renderTirthLists();
+      renderDaysUI();
+      renderPoster();
+    });
+
+    function loadTirthDatabase() {
+      // 1. Read from external tirth_data.js if present, else fallback
+      const externalMaster = Array.isArray(window.TIRTH_MASTER_LIST) ? window.TIRTH_MASTER_LIST : FALLBACK_MASTER_LIST;
+      const externalUser = Array.isArray(window.USER_ADDED_TIRTH_LIST) ? window.USER_ADDED_TIRTH_LIST : [];
+
+      // Merge any localStorage edits/additions seamlessly
+      const savedUser = JSON.parse(localStorage.getItem('yatra_user_tirths') || '[]');
+      const savedPhotoOverrides = JSON.parse(localStorage.getItem('yatra_photo_overrides') || '{}');
+
+      masterTirths = externalMaster.map(item => ({
+        name: item.name,
+        image: savedPhotoOverrides[item.name] || item.image || ""
+      }));
+
+      // Sort master list strictly alphabetically in Gujarati
+      masterTirths.sort((a, b) => guCollator.compare(a.name, b.name));
+
+      // Merge externalUser and savedUser without duplicates
+      const userMap = new Map();
+      [...externalUser, ...savedUser].forEach(item => {
+        if (item && item.name) {
+          userMap.set(item.name, {
+            name: item.name,
+            image: savedPhotoOverrides[item.name] || item.image || ""
+          });
         }
+      });
+      userAddedTirths = Array.from(userMap.values());
+    }
 
-        function formatShortGujDate(baseDateStr, dayOffset) {
-            if (!baseDateStr) return "";
-            const parts = baseDateStr.split('-');
-            if (parts.length !== 3) return "";
-            const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-            d.setDate(d.getDate() + dayOffset);
-            const dd = String(d.getDate()).padStart(2, '0');
-            const mm = String(d.getMonth() + 1).padStart(2, '0');
-            const yyyy = d.getFullYear();
-            return `${toGujNum(dd)}/${toGujNum(mm)}/${toGujNum(yyyy)}`;
+    // ==========================================
+    // 4. TOTAL DAYS & DAY SELECTION LOGIC
+    // ==========================================
+    function changeTotalDays(delta) {
+      const next = Math.max(0, Math.min(60, totalDays + delta));
+      setTotalDays(next);
+    }
+
+    function setTotalDays(val) {
+      let num = parseInt(val, 10);
+      if (isNaN(num) || num < 0) num = 0;
+      if (num > 60) num = 60;
+
+      totalDays = num;
+      document.getElementById('total-days-input').value = totalDays;
+
+      // Resize schedule array while preserving existing days
+      while (schedule.length < totalDays) {
+        schedule.push([]);
+      }
+      if (schedule.length > totalDays) {
+        schedule = schedule.slice(0, totalDays);
+      }
+
+      if (totalDays === 0) {
+        activeDayIndex = 0;
+      } else if (activeDayIndex >= totalDays) {
+        activeDayIndex = totalDays - 1;
+      }
+
+      renderDaysUI();
+      renderTirthLists();
+      renderPoster();
+    }
+
+    function selectActiveDay(idx) {
+      activeDayIndex = idx;
+      renderDaysUI();
+    }
+
+    // ==========================================
+    // 5. TIRTH LISTS & PHOTO ATTACHMENT
+    // ==========================================
+    function getTirthDayBadges(tirthName) {
+      const days = [];
+      schedule.forEach((dayList, idx) => {
+        if (dayList.some(item => item.name === tirthName)) {
+          days.push(`દિ.${idx + 1}`);
         }
+      });
+      return days;
+    }
 
-        // 2. DEFAULT STATE
-        const DEFAULT_STATE = {
-            title: "તીર્થયાત્રા સમયપત્રક",
-            startDate: "",
-            showDate: false,
-            layout: "table", // 'table' or 'cards'
-            theme: "kesari", // 'kesari', 'maroon', 'white'
-            fontSize: "md",  // 'sm', 'md', 'lg'
-            customTirths: [],
-            days: [
-                { id: "d1", places: ["નાથદ્વારા", "પુષ્કર", "ખાણ ગામ"] },
-                { id: "d2", places: ["ગોકુળ", "મથુરા", "વૃંદાવન"] },
-                { id: "d3", places: ["હરિદ્વાર", "ઋષિકેશ"] },
-                { id: "d4", places: ["યમુનોત્રી", "ગંગોત્રી"] },
-                { id: "d5", places: ["કેદારનાથ", "બદ્રીનાથ"] },
-                { id: "d6", places: ["નૈમિષારણ્ય", "અયોધ્યા", "છપૈયા"] },
-                { id: "d7", places: ["પોખરા", "કાઠમંડુ"] },
-                { id: "d8", places: ["કાશી", "પ્રયાગરાજ", "ચિત્રકૂટ"] }
-            ]
-        };
+    function renderTirthLists() {
+      const query = (document.getElementById('tirth-search').value || '').trim().toLowerCase();
 
-        let state = null;
-        let activeDayId = null;
-        let currentMobileTab = 'editor'; // 'editor' or 'preview'
-        let sortableInstances = [];
+      // Render Master Alphabetical List
+      const masterGrid = document.getElementById('master-tirth-grid');
+      const filteredMaster = masterTirths.filter(t => t.name.toLowerCase().includes(query));
 
-        window.addEventListener('DOMContentLoaded', () => {
-            loadState();
-            syncHeaderInputs();
-            renderAll();
+      masterGrid.innerHTML = filteredMaster.map(tirth => createTirthButtonHTML(tirth, 'master')).join('');
+
+      // Render User Added Separate List
+      const userGrid = document.getElementById('user-tirth-grid');
+      const filteredUser = userAddedTirths.filter(t => t.name.toLowerCase().includes(query));
+      document.getElementById('user-tirth-count').textContent = userAddedTirths.length;
+
+      if (filteredUser.length === 0) {
+        userGrid.innerHTML = `<div class="col-span-full text-xs text-gray-400 italic py-2 text-center">હજુ સુધી કોઈ નવું તીર્થ ઉમેર્યું નથી.</div>`;
+      } else {
+        userGrid.innerHTML = filteredUser.map(tirth => createTirthButtonHTML(tirth, 'user')).join('');
+      }
+    }
+
+    function createTirthButtonHTML(tirth, listType) {
+      const badges = getTirthDayBadges(tirth.name);
+      const isAdded = badges.length > 0;
+      const safeName = tirth.name.replace(/'/g, "\\'");
+
+      const thumbHTML = tirth.image
+        ? `<img src="${tirth.image}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-8 h-8 rounded-lg object-cover border border-orange-200 shrink-0" />
+           <span class="hidden w-8 h-8 rounded-lg bg-orange-100 text-orange-700 items-center justify-center text-sm shrink-0">🛕</span>`
+        : `<span class="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center text-sm shrink-0">🛕</span>`;
+
+      return `
+        <div class="group relative flex items-center justify-between p-1.5 rounded-xl border transition select-none ${
+          isAdded
+            ? 'bg-emerald-50/80 border-emerald-300 shadow-2xs'
+            : 'bg-gray-50 hover:bg-orange-50 border-gray-200 hover:border-orange-300'
+        }">
+          <!-- Clickable Tirth Area -->
+          <button
+            onclick="addTirthToActiveDay('${safeName}', '${listType}')"
+            class="flex items-center gap-2 flex-1 min-w-0 text-left pr-1"
+          >
+            ${thumbHTML}
+            <div class="min-w-0 flex-1">
+              <div class="font-bold text-xs sm:text-sm text-gray-800 truncate">${tirth.name}</div>
+              ${
+                isAdded
+                  ? `<div class="text-[10px] font-extrabold text-emerald-700 truncate">${badges.join(', ')} ✓</div>`
+                  : `<div class="text-[10px] text-gray-400">+ ઉમેરો</div>`
+              }
+            </div>
+          </button>
+
+          <!-- Photo Attach / Change Button -->
+          <button
+            onclick="triggerPhotoAttach('${safeName}', '${listType}')"
+            title="ફોટો ઉમેરો / બદલો"
+            class="w-7 h-7 rounded-lg bg-white hover:bg-orange-100 text-gray-500 hover:text-orange-700 border border-gray-200 flex items-center justify-center text-xs shrink-0 transition"
+          >
+            📷
+          </button>
+        </div>
+      `;
+    }
+
+    function previewNewTirthPhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      compressImageToBase64(file, 320, 0.8, (base64) => {
+        newTirthTempPhotoBase64 = base64;
+        document.getElementById('new-tirth-photo-label').textContent = "ફોટો ✓";
+        showToast("ફોટો પસંદ થઈ ગયો છે");
+      });
+    }
+
+    function addNewUserTirth() {
+      const input = document.getElementById('new-tirth-name');
+      const name = input.value.trim();
+      if (!name) {
+        showToast("કૃપા કરીને તીર્થસ્થાનનું નામ લખો");
+        return;
+      }
+
+      // Check if already exists in master or user list
+      const existsInMaster = masterTirths.some(t => t.name === name);
+      const existsInUser = userAddedTirths.some(t => t.name === name);
+
+      if (existsInMaster || existsInUser) {
+        showToast("આ તીર્થસ્થાન પહેલેથી લિસ્ટમાં છે!");
+        if (totalDays > 0) addTirthToActiveDay(name, existsInMaster ? 'master' : 'user');
+        input.value = "";
+        return;
+      }
+
+      const newEntry = {
+        name: name,
+        image: newTirthTempPhotoBase64 || ""
+      };
+
+      userAddedTirths.push(newEntry);
+      localStorage.setItem('yatra_user_tirths', JSON.stringify(userAddedTirths));
+
+      // Reset inputs
+      input.value = "";
+      newTirthTempPhotoBase64 = "";
+      document.getElementById('new-tirth-photo').value = "";
+      document.getElementById('new-tirth-photo-label').textContent = "ફોટો";
+
+      renderTirthLists();
+      showToast(`"${name}" અલગ લિસ્ટમાં ઉમેરાઈ ગયું!`);
+
+      // Auto-sync to local file or GitHub if configured
+      autoPersistTirthData();
+
+      // If days are active, also add to current active day for convenience
+      if (totalDays > 0) {
+        addTirthToActiveDay(name, 'user');
+      }
+    }
+
+    function triggerPhotoAttach(tirthName, listType) {
+      targetPhotoEdit = { name: tirthName, listType };
+      document.getElementById('tirth-photo-input').click();
+    }
+
+    function handlePhotoFileSelected(event) {
+      const file = event.target.files[0];
+      if (!file || !targetPhotoEdit) return;
+
+      compressImageToBase64(file, 320, 0.8, (base64) => {
+        const { name, listType } = targetPhotoEdit;
+
+        // Update in memory list
+        const targetList = listType === 'master' ? masterTirths : userAddedTirths;
+        const found = targetList.find(t => t.name === name);
+        if (found) found.image = base64;
+
+        // Update in any scheduled days
+        schedule.forEach(dayList => {
+          dayList.forEach(item => {
+            if (item.name === name) item.image = base64;
+          });
         });
 
-        // Mobile Tab Switching
-        function switchMobileTab(tab) {
-            currentMobileTab = tab;
-            const editorEl = document.getElementById('mobileTabEditor');
-            const previewEl = document.getElementById('mobileTabPreview');
-            const stickyBar = document.getElementById('stickyDayBar');
-            const btnEditor = document.getElementById('mobileNavBtnEditor');
-            const btnPreview = document.getElementById('mobileNavBtnPreview');
-            const badge = document.getElementById('mobileTotalTirthBadge');
-
-            if (tab === 'preview') {
-                editorEl.classList.add('hidden', 'lg:block');
-                previewEl.classList.remove('hidden');
-                stickyBar.classList.add('hidden', 'lg:block');
-
-                btnPreview.className = "py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-orange-600 text-white shadow-xs";
-                btnEditor.className = "py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-stone-100 text-stone-800 border border-stone-300";
-                badge.className = "px-1.5 py-0.2 text-[11px] rounded-full bg-white text-orange-700 font-extrabold";
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                editorEl.classList.remove('hidden');
-                previewEl.classList.add('hidden', 'lg:block');
-                stickyBar.classList.remove('hidden');
-
-                btnEditor.className = "py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-orange-600 text-white shadow-xs";
-                btnPreview.className = "py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-stone-100 text-stone-800 border border-stone-300";
-                badge.className = "px-1.5 py-0.2 text-[11px] rounded-full bg-orange-100 text-orange-800 font-extrabold";
-            }
-            renderPreview();
+        // Save override in localStorage
+        const overrides = JSON.parse(localStorage.getItem('yatra_photo_overrides') || '{}');
+        overrides[name] = base64;
+        localStorage.setItem('yatra_photo_overrides', JSON.stringify(overrides));
+        if (listType === 'user') {
+          localStorage.setItem('yatra_user_tirths', JSON.stringify(userAddedTirths));
         }
 
-        function loadState() {
-            try {
-                const saved = localStorage.getItem('tirth_clean_schedule_v1');
-                if (saved) {
-                    state = JSON.parse(saved);
-                } else {
-                    state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-                }
-            } catch (e) {
-                state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-            }
-            if (state.days.length > 0) {
-                activeDayId = state.days[0].id;
-            }
-        }
+        renderTirthLists();
+        renderDaysUI();
+        renderPoster();
+        showToast(`"${name}" નો ફોટો અપડેટ થઈ ગયો!`);
+        autoPersistTirthData();
+      });
 
-        function saveState() {
-            try {
-                localStorage.setItem('tirth_clean_schedule_v1', JSON.stringify(state));
-            } catch (e) {}
-        }
+      event.target.value = "";
+    }
 
-        let toastTimer = null;
-        function showToast(msg) {
-            const el = document.getElementById('toastMsg');
-            document.getElementById('toastText').textContent = msg;
-            el.classList.remove('translate-y-24', 'opacity-0');
-            if (toastTimer) clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => el.classList.add('translate-y-24', 'opacity-0'), 1800);
-        }
+    function compressImageToBase64(file, maxSize, quality, callback) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width;
+          let h = img.height;
+          if (w > h && w > maxSize) {
+            h = Math.round((h * maxSize) / w);
+            w = maxSize;
+          } else if (h > maxSize) {
+            w = Math.round((w * maxSize) / h);
+            h = maxSize;
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          callback(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
 
-        function syncHeaderInputs() {
-            document.getElementById('titleInput').value = state.title || '';
-            document.getElementById('startDateInput').value = state.startDate || '';
-            document.getElementById('showDateToggle').checked = !!state.showDate;
-            const totalInput = document.getElementById('totalDaysInput');
-            if (totalInput) totalInput.value = state.days.length;
-        }
+    // ==========================================
+    // 6. SCHEDULE MANIPULATION & DRAG-AND-DROP
+    // ==========================================
+    function addTirthToActiveDay(tirthName, listType) {
+      if (totalDays <= 0) {
+        showToast("પહેલા ઉપર સ્ટેપ-૧ માં યાત્રાના દિવસો લખો!");
+        document.getElementById('total-days-input').focus();
+        return;
+      }
 
-        function adjustTotalDays(delta) {
-            const current = state.days.length;
-            setExactTotalDays(current + delta);
-        }
+      const sourceList = listType === 'master' ? masterTirths : userAddedTirths;
+      const tirthObj = sourceList.find(t => t.name === tirthName) || { name: tirthName, image: "" };
 
-        function setExactTotalDays(val) {
-            let target = parseInt(val, 10);
-            if (isNaN(target) || target < 1) target = 1;
-            if (target > 60) target = 60;
+      schedule[activeDayIndex].push({
+        name: tirthObj.name,
+        image: tirthObj.image || ""
+      });
 
-            const current = state.days.length;
-            if (target > current) {
-                for (let i = current; i < target; i++) {
-                    state.days.push({ id: 'd_' + Date.now() + '_' + i, places: [] });
-                }
-                showToast(`કુલ ${toGujNum(target)} દિવસો તૈયાર થઈ ગયા`);
-            } else if (target < current) {
-                state.days = state.days.slice(0, target);
-                if (!state.days.some(d => d.id === activeDayId)) {
-                    activeDayId = state.days[state.days.length - 1].id;
-                }
-                showToast(`કુલ ${toGujNum(target)} દિવસો રાખવામાં આવ્યા`);
-            }
+      renderDaysUI();
+      renderTirthLists();
+      renderPoster();
+      showToast(`દિવસ ${activeDayIndex + 1} માં "${tirthName}" ઉમેરાયું`);
+    }
 
-            renderAll();
-        }
+    function removeTirthFromDay(dayIdx, itemIdx) {
+      schedule[dayIdx].splice(itemIdx, 1);
+      renderDaysUI();
+      renderTirthLists();
+      renderPoster();
+    }
 
-        function updateHeaderState() {
-            state.title = document.getElementById('titleInput').value;
-            state.showDate = document.getElementById('showDateToggle').checked;
-            saveState();
-            renderPreview();
-        }
+    function moveTirthInDay(dayIdx, itemIdx, direction) {
+      const list = schedule[dayIdx];
+      const targetIdx = itemIdx + direction;
+      if (targetIdx < 0 || targetIdx >= list.length) return;
+      [list[itemIdx], list[targetIdx]] = [list[targetIdx], list[itemIdx]];
+      renderDaysUI();
+      renderPoster();
+    }
 
-        function updateStartDate() {
-            state.startDate = document.getElementById('startDateInput').value;
-            if (state.startDate) {
-                state.showDate = true;
-                document.getElementById('showDateToggle').checked = true;
-            }
-            saveState();
-            renderAll();
-        }
+    // Drag & Drop State
+    let dragSource = null; // { dayIdx, itemIdx }
 
-        function setActiveDay(dayId) {
-            activeDayId = dayId;
-            renderAll();
-            // Scroll active pill into view horizontally on mobile
-            const activePill = document.getElementById(`pill_${dayId}`);
-            if (activePill) {
-                activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-            }
-        }
+    function handleDragStart(e, dayIdx, itemIdx) {
+      dragSource = { dayIdx, itemIdx };
+      e.currentTarget.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
 
-        // 3. RENDER EVERYTHING
-        function renderAll() {
-            renderDayControlsAndPills();
-            renderTirthChips();
-            renderDaysBuilder();
-            renderPreview();
-            saveState();
-        }
+    function handleDragEnd(e) {
+      e.currentTarget.classList.remove('dragging');
+      document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    }
 
-        function renderDayControlsAndPills() {
-            const total = state.days.length;
-            const totalInput = document.getElementById('totalDaysInput');
-            if (totalInput) totalInput.value = total;
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
 
-            const badgeHeader = document.getElementById('totalDaysBadgeHeader');
-            if (badgeHeader) badgeHeader.textContent = `કુલ ${toGujNum(total)} દિવસ`;
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
 
-            // Update total places badge in mobile bottom bar
-            const totalPlaces = state.days.reduce((acc, d) => acc + d.places.length, 0);
-            const mobileBadge = document.getElementById('mobileTotalTirthBadge');
-            if (mobileBadge) mobileBadge.textContent = toGujNum(totalPlaces);
+    function handleDropOnDay(e, targetDayIdx) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      if (!dragSource) return;
 
-            // Highlight matching preset button
-            document.querySelectorAll('.day-preset-btn').forEach(btn => {
-                const matchNum = parseInt(btn.getAttribute('onclick').replace(/\D/g, ''), 10);
-                if (matchNum === total) {
-                    btn.className = "day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-extrabold border border-orange-600 bg-orange-600 text-white shadow-2xs transition";
-                } else {
-                    btn.className = "day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 hover:bg-orange-50 text-stone-700 transition";
-                }
-            });
+      const [movedItem] = schedule[dragSource.dayIdx].splice(dragSource.itemIdx, 1);
+      schedule[targetDayIdx].push(movedItem);
+      dragSource = null;
 
-            if (state.days.length > 0 && !state.days.some(d => d.id === activeDayId)) {
-                activeDayId = state.days[0].id;
-            }
+      activeDayIndex = targetDayIdx;
+      renderDaysUI();
+      renderTirthLists();
+      renderPoster();
+    }
 
-            const activeIdx = state.days.findIndex(d => d.id === activeDayId);
-            const activeBadge = document.getElementById('activeDayIndicatorBadge');
-            if (activeBadge && activeIdx !== -1) {
-                activeBadge.innerHTML = `દિવસ ${toGujNum(activeIdx + 1)} પસંદ કરેલ`;
-            }
+    function renderDaysUI() {
+      const stickyWrapper = document.getElementById('sticky-day-selector-wrapper');
+      const pillsContainer = document.getElementById('day-pills-container');
+      const daysContainer = document.getElementById('days-editor-container');
 
-            const step2Label = document.getElementById('step2TargetDayLabel');
-            if (step2Label && activeIdx !== -1) {
-                step2Label.textContent = `→ દિવસ ${toGujNum(activeIdx + 1)} માં ઉમેરાશે`;
-            }
+      if (totalDays === 0) {
+        stickyWrapper.classList.add('hidden');
+        daysContainer.innerHTML = `
+          <div class="text-center py-8 px-4 bg-orange-50/50 rounded-xl border border-dashed border-orange-200">
+            <div class="text-3xl mb-2">🗓️</div>
+            <p class="text-sm font-semibold text-gray-700">હજુ કોઈ દિવસ પસંદ કરેલ નથી</p>
+            <p class="text-xs text-gray-500 mt-1">ઉપર સ્ટેપ-૧ માં યાત્રાના કુલ દિવસો લખો એટલે અહીં દિવસ પ્રમાણે ખાના ખૂલી જશે.</p>
+          </div>
+        `;
+        return;
+      }
 
-            const pillsContainer = document.getElementById('daySelectorPills');
-            if (!pillsContainer) return;
+      stickyWrapper.classList.remove('hidden');
+      document.getElementById('active-day-label').textContent = `દિવસ ${activeDayIndex + 1} પસંદ છે`;
 
-            pillsContainer.innerHTML = state.days.map((d, idx) => {
-                const isSelected = d.id === activeDayId;
-                const count = d.places.length;
-                return `
-                    <button id="pill_${d.id}" onclick="setActiveDay('${d.id}')"
-                        class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-extrabold border transition flex items-center gap-1.5 active:scale-95 ${
-                            isSelected
-                            ? 'bg-orange-600 text-white border-orange-700 shadow-xs'
-                            : 'bg-stone-100 text-stone-700 border-stone-300 hover:border-orange-400'
-                        }">
-                        <span>દિવસ ${toGujNum(idx + 1)}</span>
-                        <span class="px-1.5 py-0.2 rounded-full text-[10px] ${
-                            isSelected
-                            ? 'bg-white text-orange-700'
-                            : (count > 0 ? 'bg-emerald-600 text-white' : 'bg-stone-200 text-stone-600')
-                        }">${toGujNum(count)}</span>
-                    </button>
-                `;
-            }).join('');
-        }
+      // Render Sticky Day Pills
+      pillsContainer.innerHTML = schedule.map((items, idx) => {
+        const isActive = idx === activeDayIndex;
+        return `
+          <button
+            onclick="selectActiveDay(${idx})"
+            class="px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 border ${
+              isActive
+                ? 'bg-orange-600 text-white border-orange-600 shadow-sm'
+                : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-orange-50'
+            }"
+          >
+            <span>દિવસ ${idx + 1}</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[10px] ${
+              isActive ? 'bg-white/25 text-white' : 'bg-orange-100 text-orange-800'
+            }">${items.length}</span>
+          </button>
+        `;
+      }).join('');
 
-        // Find which day a Tirth is placed in (returns 1-based day index or 0)
-        function getTirthDayNumber(name) {
-            for (let i = 0; i < state.days.length; i++) {
-                if (state.days[i].places.includes(name)) return i + 1;
-            }
-            return 0;
-        }
+      // Render Day Cards in Step 3
+      daysContainer.innerHTML = schedule.map((items, dayIdx) => {
+        const isActive = dayIdx === activeDayIndex;
+        const itemsHTML = items.length === 0
+          ? `<div class="text-xs text-gray-400 italic py-3 text-center">આ દિવસમાં તીર્થ ઉમેરવા ઉપરના લિસ્ટમાંથી નામ પર ક્લિક કરો</div>`
+          : items.map((item, itemIdx) => `
+              <div
+                draggable="true"
+                ondragstart="handleDragStart(event, ${dayIdx}, ${itemIdx})"
+                ondragend="handleDragEnd(event)"
+                class="flex items-center justify-between bg-white p-2 rounded-xl border border-gray-200 shadow-2xs gap-2 cursor-grab active:cursor-grabbing"
+              >
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="text-gray-400 text-xs select-none">⋮⋮</span>
+                  <span class="w-5 h-5 rounded-full bg-orange-100 text-orange-800 text-xs font-bold flex items-center justify-center shrink-0">${itemIdx + 1}</span>
+                  ${
+                    item.image
+                      ? `<img src="${item.image}" onerror="this.style.display='none'" class="w-7 h-7 rounded-md object-cover border border-gray-200 shrink-0" />`
+                      : ``
+                  }
+                  <span class="font-bold text-sm text-gray-800 truncate">${item.name}</span>
+                </div>
 
-        function renderTirthChips() {
-            const mainContainer = document.getElementById('mainTirthChips');
-            const allMain = [...MAIN_TIRTH_LIST, ...(state.customTirths || [])];
+                <div class="flex items-center gap-1 shrink-0">
+                  <button onclick="moveTirthInDay(${dayIdx}, ${itemIdx}, -1)" ${itemIdx === 0 ? 'disabled' : ''} class="w-7 h-7 rounded-lg bg-gray-100 hover:bg-orange-100 disabled:opacity-30 text-xs font-bold">↑</button>
+                  <button onclick="moveTirthInDay(${dayIdx}, ${itemIdx}, 1)" ${itemIdx === items.length - 1 ? 'disabled' : ''} class="w-7 h-7 rounded-lg bg-gray-100 hover:bg-orange-100 disabled:opacity-30 text-xs font-bold">↓</button>
+                  <button onclick="removeTirthFromDay(${dayIdx}, ${itemIdx})" class="w-7 h-7 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold">✕</button>
+                </div>
+              </div>
+            `).join('');
 
-            mainContainer.innerHTML = allMain.map(name => {
-                const dayNum = getTirthDayNumber(name);
-                const used = dayNum > 0;
-                return `
-                    <button onclick="addTirthToActiveDay('${escapeHtml(name)}')"
-                        class="px-3 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold border text-left transition flex items-center justify-between gap-1.5 active:scale-95 ${
-                            used 
-                            ? 'bg-emerald-50 border-emerald-400 text-emerald-950 shadow-2xs' 
-                            : 'bg-stone-50 border-stone-300 text-stone-800 hover:border-orange-500 hover:bg-orange-50/50'
-                        }">
-                        <span class="truncate">${escapeHtml(name)}</span>
-                        ${used 
-                            ? `<span class="shrink-0 text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-md font-bold">દિ.${toGujNum(dayNum)} ✓</span>`
-                            : `<i class="fa-solid fa-plus text-orange-600 text-xs shrink-0"></i>`
-                        }
-                    </button>
-                `;
-            }).join('');
+        return `
+          <div
+            onclick="selectActiveDay(${dayIdx})"
+            ondragover="handleDragOver(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleDropOnDay(event, ${dayIdx})"
+            class="rounded-xl p-3 border-2 transition cursor-pointer ${
+              isActive
+                ? 'bg-orange-50/70 border-orange-500 shadow-sm'
+                : 'bg-gray-50 border-gray-200 hover:border-orange-300'
+            }"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-xs font-extrabold ${
+                  isActive ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700'
+                }">દિવસ ${dayIdx + 1}</span>
+                ${isActive ? '<span class="text-[11px] font-bold text-orange-700">● પસંદ કરેલ</span>' : ''}
+              </div>
+              <span class="text-xs font-semibold text-gray-500">${items.length} તીર્થ</span>
+            </div>
+            <div class="space-y-1.5" onclick="event.stopPropagation()">
+              ${itemsHTML}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
 
-            const charDhamContainer = document.getElementById('charDhamChips');
-            charDhamContainer.innerHTML = CHAR_DHAM_LIST.map(name => {
-                const dayNum = getTirthDayNumber(name);
-                const used = dayNum > 0;
-                return `
-                    <button onclick="addTirthToActiveDay('${escapeHtml(name)}')"
-                        class="px-3 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold border text-left transition flex items-center justify-between gap-1.5 active:scale-95 ${
-                            used 
-                            ? 'bg-emerald-50 border-emerald-400 text-emerald-950 shadow-2xs' 
-                            : 'bg-orange-50/50 border-orange-200 text-stone-800 hover:border-orange-500 hover:bg-orange-100/50'
-                        }">
-                        <span class="truncate">${escapeHtml(name)}</span>
-                        ${used 
-                            ? `<span class="shrink-0 text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-md font-bold">દિ.${toGujNum(dayNum)} ✓</span>`
-                            : `<i class="fa-solid fa-plus text-orange-600 text-xs shrink-0"></i>`
-                        }
-                    </button>
-                `;
-            }).join('');
-        }
+    function resetSchedule() {
+      if (totalDays === 0) return;
+      if (confirm("શું તમે બધા દિવસોનું શેડ્યુઅલ ખાલી કરવા માંગો છો?")) {
+        setTotalDays(0);
+        showToast("શેડ્યુઅલ રીસેટ થઈ ગયું");
+      }
+    }
 
-        function addTirthToActiveDay(name) {
-            if (state.days.length === 0) {
-                state.days.push({ id: 'd_' + Date.now(), places: [] });
-                activeDayId = state.days[0].id;
-            }
-            let targetDay = state.days.find(d => d.id === activeDayId) || state.days[state.days.length - 1];
-            targetDay.places.push(name);
-            const dayIdx = state.days.indexOf(targetDay) + 1;
-            renderAll();
-            showToast(`"${name}" → દિવસ ${toGujNum(dayIdx)} માં ઉમેરાયું`);
-        }
+    // ==========================================
+    // 7. POSTER PREVIEW RENDERING
+    // ==========================================
+    function setPosterTheme(themeClass) {
+      posterTheme = themeClass;
+      const poster = document.getElementById('poster-canvas');
+      poster.classList.remove('theme-saffron', 'theme-maroon', 'theme-royal');
+      poster.classList.add(themeClass);
+    }
 
-        function addCustomTirth() {
-            const inp = document.getElementById('customTirthInput');
-            const val = inp.value.trim();
-            if (!val) return;
-            if (!MAIN_TIRTH_LIST.includes(val) && !CHAR_DHAM_LIST.includes(val) && !state.customTirths.includes(val)) {
-                state.customTirths.push(val);
-            }
-            inp.value = '';
-            addTirthToActiveDay(val);
-        }
+    function setPosterLayout(layout) {
+      posterLayout = layout;
+      document.getElementById('btn-layout-cards').className =
+        layout === 'cards' ? 'px-2.5 py-1 rounded-md bg-white text-orange-700 shadow-sm' : 'px-2.5 py-1 rounded-md text-gray-600';
+      document.getElementById('btn-layout-table').className =
+        layout === 'table' ? 'px-2.5 py-1 rounded-md bg-white text-orange-700 shadow-sm' : 'px-2.5 py-1 rounded-md text-gray-600';
+      renderPoster();
+    }
 
-        // 4. RENDER DAY CARDS & DRAG-AND-DROP
-        function renderDaysBuilder() {
-            sortableInstances.forEach(s => s.destroy());
-            sortableInstances = [];
+    function renderPoster() {
+      const title = document.getElementById('yatra-title-input').value.trim() || "પવિત્ર તીર્થ યાત્રા કાર્યક્રમ";
+      const showPhotos = document.getElementById('show-photos-toggle').checked;
+      const posterBody = document.getElementById('poster-body');
 
-            const container = document.getElementById('daysBuilderContainer');
-            container.innerHTML = state.days.map((day, dIdx) => {
-                const isSelected = day.id === activeDayId;
-                const dateLabel = (state.showDate && state.startDate) ? formatShortGujDate(state.startDate, dIdx) : '';
+      document.getElementById('poster-title-display').textContent = title;
+      document.getElementById('poster-subtitle-display').textContent = `કુલ ${totalDays} દિવસની યાત્રા`;
 
-                const placesHtml = day.places.length === 0
-                    ? `<div class="text-center py-4 px-2 text-xs ${isSelected ? 'text-orange-700 font-bold bg-orange-50/60 border-orange-300' : 'text-stone-400 border-stone-200'} border border-dashed rounded-xl">
-                        ${isSelected ? '👆 ઉપરના લિસ્ટમાંથી તીર્થસ્થાન પર ટચ કરો એટલે અહીં ઉમેરાશે' : 'આ દિવસમાં તીર્થ ઉમેરવા અહીં ટચ કરો'}
-                       </div>`
-                    : day.places.map((pName, pIdx) => `
-                        <div class="bg-stone-50 border border-stone-200/90 rounded-xl px-2.5 py-2 flex items-center justify-between gap-1.5">
-                            <div class="flex items-center gap-1.5 min-w-0 flex-grow">
-                                <span class="drag-handle text-stone-400 hover:text-orange-600 px-1 py-0.5 cursor-grab" title="ખેંચીને ક્રમ બદલો">
-                                    <i class="fa-solid fa-grip-vertical text-xs"></i>
-                                </span>
-                                <input type="text" value="${escapeHtml(pName)}"
-                                    onclick="event.stopPropagation()"
-                                    oninput="editPlaceName('${day.id}', ${pIdx}, this.value)"
-                                    class="bg-transparent font-extrabold text-stone-800 text-xs sm:text-sm outline-none focus:bg-white focus:ring-1 focus:ring-orange-400 focus:px-1.5 rounded w-full">
-                            </div>
-                            <div class="flex items-center gap-1 shrink-0">
-                                <button onclick="event.stopPropagation(); movePlace('${day.id}', ${pIdx}, -1)" ${pIdx === 0 ? 'disabled' : ''}
-                                    class="w-7 h-7 rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-orange-600 active:scale-90 disabled:opacity-30 text-xs flex items-center justify-center">
-                                    <i class="fa-solid fa-arrow-up"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); movePlace('${day.id}', ${pIdx}, 1)" ${pIdx === day.places.length - 1 ? 'disabled' : ''}
-                                    class="w-7 h-7 rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-orange-600 active:scale-90 disabled:opacity-30 text-xs flex items-center justify-center">
-                                    <i class="fa-solid fa-arrow-down"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); removePlace('${day.id}', ${pIdx})"
-                                    class="w-7 h-7 rounded-lg bg-red-50 hover:bg-red-600 active:scale-90 text-red-600 hover:text-white text-xs flex items-center justify-center transition">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `).join('');
+      if (totalDays === 0) {
+        posterBody.innerHTML = `
+          <div class="text-center py-14 text-gray-400 text-sm">
+            દિવસો પસંદ કરી તીર્થસ્થાનો ઉમેરશો એટલે અહીં સુંદર શેડ્યુઅલ કાર્ડ તૈયાર થશે.
+          </div>
+        `;
+        return;
+      }
 
-                return `
-                    <div onclick="setActiveDay('${day.id}')"
-                        class="bg-white rounded-2xl border-2 transition overflow-hidden flex flex-col cursor-pointer ${
-                            isSelected ? 'border-orange-500 ring-2 ring-orange-200 shadow-sm' : 'border-stone-200 hover:border-stone-300'
-                        }">
-                        <!-- Day Header -->
-                        <div class="px-3.5 py-2.5 ${isSelected ? 'bg-orange-600' : 'bg-stone-900'} text-white flex justify-between items-center transition-colors">
-                            <div class="flex items-center gap-2">
-                                <span class="${isSelected ? 'bg-white text-orange-700' : 'bg-orange-600 text-white'} font-extrabold px-2.5 py-0.5 rounded-lg text-xs">
-                                    દિવસ ${toGujNum(dIdx + 1)}
-                                </span>
-                                ${dateLabel ? `<span class="text-[11px] text-amber-100 font-semibold">${dateLabel}</span>` : ''}
-                                ${isSelected ? `<span class="text-[10px] bg-black/20 px-2 py-0.5 rounded-full font-bold">પસંદ કરેલ</span>` : ''}
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <button onclick="event.stopPropagation(); moveDay(${dIdx}, -1)" ${dIdx === 0 ? 'disabled' : ''}
-                                    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-25 text-xs flex items-center justify-center" title="દિવસ ઉપર ખસેડો">
-                                    <i class="fa-solid fa-chevron-left"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); moveDay(${dIdx}, 1)" ${dIdx === state.days.length - 1 ? 'disabled' : ''}
-                                    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-25 text-xs flex items-center justify-center" title="દિવસ નીચે ખસેડો">
-                                    <i class="fa-solid fa-chevron-right"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); deleteDay('${day.id}')"
-                                    class="w-7 h-7 rounded-lg bg-red-500/80 hover:bg-red-600 text-white text-xs flex items-center justify-center" title="દિવસ કાઢી નાખો">
-                                    <i class="fa-solid fa-trash-can text-[11px]"></i>
-                                </button>
-                            </div>
-                        </div>
+      if (posterLayout === 'table') {
+        const rows = schedule.map((items, idx) => {
+          const content = items.length === 0
+            ? `<span class="text-gray-400 text-xs">—</span>`
+            : `<div class="flex flex-wrap gap-2">
+                ${items.map(item => `
+                  <div class="inline-flex items-center gap-1.5 bg-white border border-gray-200 px-2.5 py-1 rounded-lg shadow-2xs">
+                    ${showPhotos && item.image ? `<img src="${item.image}" onerror="this.style.display='none'" class="w-6 h-6 rounded object-cover" />` : ''}
+                    <span class="font-bold text-sm text-gray-800">${item.name}</span>
+                  </div>
+                `).join('')}
+              </div>`;
 
-                        <!-- Sortable Places List -->
-                        <div id="sortableDay_${day.id}" data-day-id="${day.id}" class="p-2.5 sm:p-3 space-y-2 flex-grow min-h-[68px]">
-                            ${placesHtml}
-                        </div>
+          return `
+            <tr class="border-b border-gray-200 last:border-none">
+              <td class="py-3 px-3 font-extrabold text-sm whitespace-nowrap align-top w-28 poster-day-badge">
+                દિવસ ${idx + 1}
+              </td>
+              <td class="py-2.5 px-3 bg-white/80">
+                ${content}
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        posterBody.innerHTML = `
+          <div class="rounded-xl overflow-hidden border poster-day-box">
+            <table class="w-full border-collapse">
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      } else {
+        // Box Cards View
+        posterBody.innerHTML = schedule.map((items, idx) => {
+          const content = items.length === 0
+            ? `<div class="text-xs text-gray-400 italic py-1">કોઈ તીર્થ પસંદ કરેલ નથી</div>`
+            : showPhotos
+              ? `<div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+                  ${items.map(item => `
+                    <div class="bg-white rounded-xl border border-gray-200 p-2 flex items-center gap-2.5 shadow-2xs">
+                      ${
+                        item.image
+                          ? `<img src="${item.image}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-11 h-11 rounded-lg object-cover shrink-0 border border-orange-100" />
+                             <div class="hidden w-11 h-11 rounded-lg bg-orange-50 text-orange-600 items-center justify-center text-lg shrink-0">🛕</div>`
+                          : `<div class="w-11 h-11 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-lg shrink-0">🛕</div>`
+                      }
+                      <span class="font-bold text-sm text-gray-800 leading-snug">${item.name}</span>
                     </div>
-                `;
-            }).join('');
-
-            // Initialize SortableJS
-            state.days.forEach(day => {
-                const el = document.getElementById(`sortableDay_${day.id}`);
-                if (el) {
-                    const inst = new Sortable(el, {
-                        group: 'shared-tirth-days',
-                        animation: 150,
-                        handle: '.drag-handle',
-                        ghostClass: 'sortable-ghost',
-                        dragClass: 'sortable-drag',
-                        onEnd: function (evt) {
-                            const fromId = evt.from.getAttribute('data-day-id');
-                            const toId = evt.to.getAttribute('data-day-id');
-                            const oldIdx = evt.oldIndex;
-                            const newIdx = evt.newIndex;
-                            if (fromId === toId && oldIdx === newIdx) return;
-
-                            const fromDay = state.days.find(d => d.id === fromId);
-                            const toDay = state.days.find(d => d.id === toId);
-                            if (!fromDay || !toDay) return;
-
-                            const [movedPlace] = fromDay.places.splice(oldIdx, 1);
-                            toDay.places.splice(newIdx, 0, movedPlace);
-                            renderAll();
-                        }
-                    });
-                    sortableInstances.push(inst);
-                }
-            });
-        }
-
-        function editPlaceName(dayId, placeIdx, newVal) {
-            const day = state.days.find(d => d.id === dayId);
-            if (!day) return;
-            day.places[placeIdx] = newVal;
-            saveState();
-            renderTirthChips();
-            renderPreview();
-        }
-
-        function movePlace(dayId, idx, dir) {
-            const day = state.days.find(d => d.id === dayId);
-            if (!day) return;
-            const target = idx + dir;
-            if (target < 0 || target >= day.places.length) return;
-            const temp = day.places[idx];
-            day.places[idx] = day.places[target];
-            day.places[target] = temp;
-            renderAll();
-        }
-
-        function removePlace(dayId, idx) {
-            const day = state.days.find(d => d.id === dayId);
-            if (!day) return;
-            day.places.splice(idx, 1);
-            renderAll();
-        }
-
-        function addNewDay() {
-            const newDay = { id: 'd_' + Date.now(), places: [] };
-            state.days.push(newDay);
-            activeDayId = newDay.id;
-            renderAll();
-            showToast(`દિવસ ${toGujNum(state.days.length)} ઉમેરાયો`);
-        }
-
-        function moveDay(idx, dir) {
-            const target = idx + dir;
-            if (target < 0 || target >= state.days.length) return;
-            const temp = state.days[idx];
-            state.days[idx] = state.days[target];
-            state.days[target] = temp;
-            renderAll();
-        }
-
-        function deleteDay(dayId) {
-            if (state.days.length <= 1) {
-                state.days[0].places = [];
-                renderAll();
-                return;
-            }
-            state.days = state.days.filter(d => d.id !== dayId);
-            if (activeDayId === dayId) {
-                activeDayId = state.days[0].id;
-            }
-            renderAll();
-        }
-
-        function clearAllDays() {
-            state.days.forEach(d => d.places = []);
-            if (state.days.length > 0) {
-                activeDayId = state.days[0].id;
-            }
-            renderAll();
-            showToast("બધા દિવસોમાંથી તીર્થસ્થાનો ખાલી કર્યા");
-        }
-
-        function loadDefaultSchedule() {
-            state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-            activeDayId = state.days[0].id;
-            syncHeaderInputs();
-            renderAll();
-            showToast("તૈયાર તીર્થયાત્રા શેડ્યુઅલ લોડ થયું");
-        }
-
-        // 5. RENDER CLEAN PREVIEW CARD
-        function setLayout(l) {
-            state.layout = l;
-            saveState();
-            renderPreview();
-        }
-
-        function setTheme(t) {
-            state.theme = t;
-            saveState();
-            renderPreview();
-        }
-
-        function setFontSize(s) {
-            state.fontSize = s;
-            saveState();
-            renderPreview();
-        }
-
-        function renderPreview() {
-            const layout = state.layout || 'table';
-            const theme = state.theme || 'kesari';
-            const fontSize = state.fontSize || 'md';
-
-            // Active button styles
-            ['table', 'cards'].forEach(l => {
-                document.getElementById(`btnLayout_${l}`).className = `py-1.5 px-1.5 rounded-lg font-bold border text-[11px] transition ${layout === l ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 text-stone-700 border-stone-200'}`;
-            });
-            ['kesari', 'maroon', 'white'].forEach(t => {
-                document.getElementById(`btnTheme_${t}`).className = `py-1.5 px-1 rounded-lg font-bold border text-[11px] transition ${theme === t ? 'bg-orange-600 text-white border-orange-600' : 'bg-stone-50 text-stone-700 border-stone-200'}`;
-            });
-            ['sm', 'md', 'lg'].forEach(s => {
-                document.getElementById(`btnFont_${s}`).className = `py-1.5 px-1 rounded-lg font-bold border text-[11px] transition ${fontSize === s ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 text-stone-700 border-stone-200'}`;
-            });
-
-            const canvas = document.getElementById('scheduleExportCanvas');
-            canvas.className = `card-theme-${theme} rounded-2xl shadow-xl p-4 sm:p-6 mx-auto w-full`;
-
-            const titleEl = document.getElementById('previewTitleText');
-            titleEl.textContent = (state.title && state.title.trim()) ? state.title : 'તીર્થયાત્રા સમયપત્રક';
-
-            const textSizeCls = fontSize === 'lg' ? 'text-base sm:text-lg' : (fontSize === 'sm' ? 'text-xs sm:text-sm' : 'text-sm sm:text-base');
-            const showDates = state.showDate && state.startDate;
-
-            const contentEl = document.getElementById('previewScheduleContent');
-
-            if (layout === 'table') {
-                const rowsHtml = state.days.map((day, idx) => {
-                    const placesStr = day.places.filter(Boolean).join('  •  ') || '-';
-                    const dateStr = showDates ? formatShortGujDate(state.startDate, idx) : '';
-                    return `
-                        <tr class="border-b border-stone-200 last:border-0">
-                            <td class="py-2.5 sm:py-3 px-2.5 sm:px-3 font-extrabold whitespace-nowrap align-middle w-20 sm:w-24 text-center border-r border-stone-200">
-                                <span class="day-badge inline-block px-2 sm:px-2.5 py-1 rounded-lg text-xs sm:text-sm">
-                                    દિવસ ${toGujNum(idx + 1)}
-                                </span>
-                                ${dateStr ? `<div class="text-[10px] sm:text-[11px] text-stone-600 font-bold mt-1">${dateStr}</div>` : ''}
-                            </td>
-                            <td class="py-2.5 sm:py-3 px-3 sm:px-4 font-extrabold text-stone-900 ${textSizeCls} leading-relaxed align-middle">
-                                ${escapeHtml(placesStr)}
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-
-                contentEl.innerHTML = `
-                    <div class="day-box rounded-xl border-2 overflow-hidden shadow-2xs">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-stone-100/90 border-b-2 border-stone-200 text-stone-700 text-xs sm:text-sm font-extrabold">
-                                    <th class="py-2.5 px-2.5 text-center border-r border-stone-200 w-20 sm:w-24">દિવસ</th>
-                                    <th class="py-2.5 px-3 sm:px-4">તીર્થસ્થાનનું નામ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${rowsHtml}
-                            </tbody>
-                        </table>
+                  `).join('')}
+                </div>`
+              : `<div class="flex flex-wrap gap-2 pt-1">
+                  ${items.map((item, i) => `
+                    <div class="bg-white border border-gray-200 px-3 py-1.5 rounded-lg font-bold text-sm text-gray-800 shadow-2xs flex items-center gap-1.5">
+                      <span class="text-xs text-orange-600 font-extrabold">${i + 1}.</span>
+                      <span>${item.name}</span>
                     </div>
-                `;
-            } else {
-                // CARDS VIEW
-                const cardsHtml = state.days.map((day, idx) => {
-                    const dateStr = showDates ? formatShortGujDate(state.startDate, idx) : '';
-                    const badges = day.places.filter(Boolean).map(p => `
-                        <span class="inline-flex items-center gap-1.5 font-extrabold text-stone-900 ${textSizeCls} bg-stone-100/80 border border-stone-300/80 px-2.5 py-1 rounded-xl">
-                            <span class="text-orange-600 text-xs">🚩</span>
-                            <span>${escapeHtml(p)}</span>
-                        </span>
-                    `).join('');
+                  `).join('')}
+                </div>`;
 
-                    return `
-                        <div class="day-box rounded-xl border-2 p-3 shadow-2xs flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
-                            <div class="shrink-0 flex sm:flex-col items-center justify-between sm:justify-center sm:w-24 sm:border-r border-stone-200 sm:pr-3">
-                                <span class="day-badge font-extrabold px-2.5 py-1 rounded-lg text-xs sm:text-sm">
-                                    દિવસ ${toGujNum(idx + 1)}
-                                </span>
-                                ${dateStr ? `<span class="text-[11px] text-stone-600 font-bold sm:mt-1">${dateStr}</span>` : ''}
-                            </div>
-                            <div class="flex flex-wrap gap-1.5 sm:gap-2 items-center flex-grow">
-                                ${badges || `<span class="text-xs text-stone-400">-</span>`}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+          return `
+            <div class="bg-white/90 rounded-xl border-2 poster-day-box p-3 shadow-2xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="poster-day-badge px-3 py-0.5 rounded-md font-extrabold text-sm">
+                  દિવસ ${idx + 1}
+                </span>
+              </div>
+              ${content}
+            </div>
+          `;
+        }).join('');
+      }
+    }
 
-                contentEl.innerHTML = `<div class="space-y-2.5">${cardsHtml}</div>`;
-            }
+    // ==========================================
+    // 8. MOBILE NAVIGATION TABS
+    // ==========================================
+    function switchMobileTab(tab) {
+      const editorEl = document.getElementById('mobile-tab-editor');
+      const previewEl = document.getElementById('mobile-tab-preview');
+      const btnEditor = document.getElementById('nav-btn-editor');
+      const btnPreview = document.getElementById('nav-btn-preview');
+
+      if (tab === 'editor') {
+        editorEl.classList.remove('hidden');
+        previewEl.classList.add('hidden');
+        btnEditor.className = "flex flex-col items-center justify-center gap-0.5 text-orange-600 font-bold border-t-2 border-orange-600 bg-orange-50/50";
+        btnPreview.className = "flex flex-col items-center justify-center gap-0.5 text-gray-500 font-semibold border-t-2 border-transparent";
+      } else {
+        editorEl.classList.add('hidden');
+        previewEl.classList.remove('hidden');
+        btnPreview.className = "flex flex-col items-center justify-center gap-0.5 text-orange-600 font-bold border-t-2 border-orange-600 bg-orange-50/50";
+        btnEditor.className = "flex flex-col items-center justify-center gap-0.5 text-gray-500 font-semibold border-t-2 border-transparent";
+        renderPoster();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // 9. HD PNG & PDF EXPORT (Full Desktop Poster Size even on Mobile)
+    // ==========================================
+    async function capturePosterCanvas() {
+      const original = document.getElementById('poster-canvas');
+      const clone = original.cloneNode(true);
+
+      // Force fixed high-resolution width off-screen so mobile screens still export full HD poster
+      clone.style.position = 'fixed';
+      clone.style.left = '-9999px';
+      clone.style.top = '0';
+      clone.style.width = '720px';
+      clone.style.maxWidth = '720px';
+      document.body.appendChild(clone);
+
+      const canvas = await html2canvas(clone, {
+        scale: 3, // Ultra HD 3x resolution
+        useCORS: true,
+        backgroundColor: null
+      });
+
+      document.body.removeChild(clone);
+      return canvas;
+    }
+
+    async function downloadHDImage() {
+      const btn = document.getElementById('btn-download-png');
+      const oldText = btn.innerHTML;
+      btn.innerHTML = `<span>⏳</span><span>બની રહ્યો છે...</span>`;
+      btn.disabled = true;
+
+      try {
+        const canvas = await capturePosterCanvas();
+        const link = document.createElement('a');
+        link.download = 'Yatra-Schedule-HD.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+        showToast("HD ફોટો ડાઉનલોડ થઈ ગયો!");
+      } catch (err) {
+        console.error(err);
+        showToast("ફોટો બનાવવામાં ભૂલ આવી.");
+      } finally {
+        btn.innerHTML = oldText;
+        btn.disabled = false;
+      }
+    }
+
+    async function downloadPDF() {
+      const btn = document.getElementById('btn-download-pdf');
+      const oldText = btn.innerHTML;
+      btn.innerHTML = `<span>⏳</span><span>PDF બને છે...</span>`;
+      btn.disabled = true;
+
+      try {
+        const canvas = await capturePosterCanvas();
+        const imgData = canvas.toDataURL('image/jpeg', 0.96);
+        const { jsPDF } = window.jspdf;
+
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 297; // A4 height in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        const pdf = new jsPDF('p', 'mm', imgHeight > pageHeight ? [imgWidth, imgHeight + 10] : 'a4');
+        pdf.addImage(imgData, 'JPEG', 0, 5, imgWidth, imgHeight);
+        pdf.save('Yatra-Schedule.pdf');
+        showToast("PDF ડાઉનલોડ થઈ ગઈ!");
+      } catch (err) {
+        console.error(err);
+        showToast("PDF બનાવવામાં ભૂલ આવી.");
+      } finally {
+        btn.innerHTML = oldText;
+        btn.disabled = false;
+      }
+    }
+
+    // ==========================================
+    // 10. tirth_data.js GENERATION & GITHUB SYNC
+    // ==========================================
+    function generateTirthDataJSContent() {
+      return `/**
+ * યાત્રા આયોજક - તીર્થસ્થાન ડેટાબેઝ ફાઈલ (tirth_data.js)
+ * છેલ્લું અપડેટ: ${new Date().toLocaleString('gu-IN')}
+ */
+
+// ૧. મુખ્ય તીર્થસ્થાનોનું લિસ્ટ (કક્કાવારી પ્રમાણે)
+window.TIRTH_MASTER_LIST = ${JSON.stringify(masterTirths, null, 2)};
+
+// ૨. યુઝરે ઉમેરેલા નવા તીર્થસ્થાનોનું અલગ લિસ્ટ
+window.USER_ADDED_TIRTH_LIST = ${JSON.stringify(userAddedTirths, null, 2)};
+`;
+    }
+
+    function downloadTirthDataJS() {
+      const content = generateTirthDataJSContent();
+      const blob = new Blob([content], { type: 'application/javascript;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'tirth_data.js';
+      link.click();
+      showToast("tirth_data.js ફાઈલ ડાઉનલોડ થઈ ગઈ!");
+    }
+
+    async function linkLocalTirthFile() {
+      if (!window.showOpenFilePicker) {
+        showToast("તમારું બ્રાઉઝર ડાયરેક્ટ ફાઈલ લિંક સપોર્ટ કરતું નથી. ડાઉનલોડ બટન વાપરો.");
+        return;
+      }
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          types: [{ description: 'JavaScript File', accept: { 'text/javascript': ['.js'] } }]
+        });
+        localFileHandle = handle;
+        await writeLocalTirthFile();
+        document.getElementById('local-file-status').textContent = "✅ ફાઈલ લિંક થઈ ગઈ છે! હવે નવા તીર્થ સીધા સેવ થશે.";
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function writeLocalTirthFile() {
+      if (!localFileHandle) return;
+      const writable = await localFileHandle.createWritable();
+      await writable.write(generateTirthDataJSContent());
+      await writable.close();
+    }
+
+    function loadGitHubConfigToInputs() {
+      const cfg = JSON.parse(localStorage.getItem('yatra_gh_config') || '{}');
+      if (cfg.owner) document.getElementById('gh-owner').value = cfg.owner;
+      if (cfg.repo) document.getElementById('gh-repo').value = cfg.repo;
+      if (cfg.token) document.getElementById('gh-token').value = cfg.token;
+    }
+
+    async function saveGitHubConfig() {
+      const owner = document.getElementById('gh-owner').value.trim();
+      const repo = document.getElementById('gh-repo').value.trim();
+      const token = document.getElementById('gh-token').value.trim();
+      if (!owner || !repo || !token) {
+        showToast("કૃપા કરીને ત્રણેય વિગતો ભરો");
+        return;
+      }
+      localStorage.setItem('yatra_gh_config', JSON.stringify({ owner, repo, token }));
+      await syncToGitHub();
+    }
+
+    async function syncToGitHub() {
+      const cfg = JSON.parse(localStorage.getItem('yatra_gh_config') || '{}');
+      if (!cfg.owner || !cfg.repo || !cfg.token) return;
+
+      const statusEl = document.getElementById('gh-sync-status');
+      statusEl.textContent = "⏳ GitHub પર અપડેટ થઈ રહ્યું છે...";
+
+      const apiUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/tirth_data.js`;
+      try {
+        let sha = null;
+        const getRes = await fetch(apiUrl, {
+          headers: { Authorization: `token ${cfg.token}` }
+        });
+        if (getRes.ok) {
+          const data = await getRes.json();
+          sha = data.sha;
         }
 
-        // 6. HIGH-QUALITY DESKTOP-PROPORTION EXPORT EVEN ON SMALL PHONES
-        async function captureHighResCanvas(bgColor) {
-            const sourceEl = document.getElementById('scheduleExportCanvas');
-            await document.fonts.ready;
+        const contentUTF8 = generateTirthDataJSContent();
+        const contentBase64 = btoa(unescape(encodeURIComponent(contentUTF8)));
 
-            // Clone offscreen at a crisp 720px width so phone downloads look like studio posters
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'fixed';
-            wrapper.style.left = '-9999px';
-            wrapper.style.top = '0';
-            wrapper.style.width = '720px';
-            wrapper.style.zIndex = '-1';
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            Authorization: `token ${cfg.token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: 'Update tirth_data.js from Yatra Planner App',
+            content: contentBase64,
+            ...(sha ? { sha } : {})
+          })
+        });
 
-            const clone = sourceEl.cloneNode(true);
-            clone.style.width = '720px';
-            clone.style.padding = '28px';
-            wrapper.appendChild(clone);
-            document.body.appendChild(wrapper);
-
-            try {
-                const canvas = await html2canvas(clone, {
-                    scale: 3,
-                    useCORS: true,
-                    backgroundColor: bgColor
-                });
-                return canvas;
-            } finally {
-                document.body.removeChild(wrapper);
-            }
+        if (putRes.ok) {
+          statusEl.textContent = "✅ GitHub પર tirth_data.js સફળતાપૂર્વક સેવ થઈ ગઈ!";
+          showToast("GitHub પર સેવ થઈ ગયું!");
+        } else {
+          statusEl.textContent = "❌ GitHub પર સેવ કરવામાં ભૂલ આવી. Token ચેક કરો.";
         }
+      } catch (e) {
+        statusEl.textContent = "❌ નેટવર્ક અથવા GitHub ભૂલ.";
+      }
+    }
 
-        async function downloadPhoto() {
-            const btn = document.getElementById('btnDownloadPng');
-            const oldHtml = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>બને છે...</span>`;
+    async function autoPersistTirthData() {
+      if (localFileHandle) {
+        await writeLocalTirthFile();
+      }
+      const cfg = JSON.parse(localStorage.getItem('yatra_gh_config') || '{}');
+      if (cfg.owner && cfg.repo && cfg.token) {
+        await syncToGitHub();
+      }
+    }
 
-            try {
-                const canvas = await captureHighResCanvas(null);
-                const link = document.createElement('a');
-                link.download = `Tirth-Yatra-Schedule.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                showToast("HD ફોટો ડાઉનલોડ થઈ ગયો!");
-            } catch (e) {
-                showToast("ફોટો ડાઉનલોડમાં ભૂલ આવી");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = oldHtml;
-            }
-        }
+    function openDataModal() {
+      document.getElementById('data-modal').classList.remove('hidden');
+    }
 
-        async function downloadPDF() {
-            const btn = document.getElementById('btnDownloadPdf');
-            const oldHtml = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>બને છે...</span>`;
+    function closeDataModal() {
+      document.getElementById('data-modal').classList.add('hidden');
+    }
 
-            try {
-                const canvas = await captureHighResCanvas('#ffffff');
-                const imgData = canvas.toDataURL('image/jpeg', 0.98);
-                const { jsPDF } = window.jspdf;
-
-                const pdfWidth = 210;
-                const margin = 10;
-                const contentWidth = pdfWidth - (margin * 2);
-                const contentHeight = (canvas.height * contentWidth) / canvas.width;
-                const pageHeight = Math.max(297, contentHeight + (margin * 2));
-
-                const pdf = new jsPDF({
-                    orientation: 'p',
-                    unit: 'mm',
-                    format: [pdfWidth, pageHeight]
-                });
-                pdf.addImage(imgData, 'JPEG', margin, margin, contentWidth, contentHeight);
-                pdf.save(`Tirth-Yatra-Schedule.pdf`);
-                showToast("PDF ડાઉનલોડ થઈ ગઈ!");
-            } catch (e) {
-                showToast("PDF ડાઉનલોડમાં ભૂલ આવી");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = oldHtml;
-            }
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-    </script>
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('opacity-0');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => t.classList.add('opacity-0'), 2600);
+    }
+  </script>
 </body>
 </html>
