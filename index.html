@@ -2,7 +2,7 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>તીર્થયાત્રા શેડ્યુઅલ (Tirth Yatra Schedule)</title>
     
     <!-- Tailwind CSS -->
@@ -26,12 +26,22 @@
     <style>
         body {
             font-family: 'Noto Sans Gujarati', sans-serif;
-            background-color: #f6f4f0;
+            background-color: #f5f3ef;
             color: #1c1917;
+            -webkit-tap-highlight-color: transparent;
         }
 
         h1, h2, h3, .font-heading {
             font-family: 'Anek Gujarati', 'Noto Sans Gujarati', sans-serif;
+        }
+
+        /* Hide scrollbars for horizontal pill strip */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
         /* Drag and Drop Styling */
@@ -42,7 +52,7 @@
         }
         .sortable-drag {
             background-color: #ffffff !important;
-            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.15) !important;
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2) !important;
         }
         .drag-handle {
             cursor: grab;
@@ -105,107 +115,175 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-orange-200 selection:text-orange-950">
+<body class="min-h-screen flex flex-col pb-24 lg:pb-8 selection:bg-orange-200 selection:text-orange-950">
 
-    <!-- MINIMAL HEADER -->
+    <!-- ========================================================= -->
+    <!-- TOP HEADER                                                -->
+    <!-- ========================================================= -->
     <header class="bg-stone-900 text-white shadow-md sticky top-0 z-40 border-b border-orange-500/30">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-orange-600 flex items-center justify-center text-white shadow-xs">
-                    <i class="fa-solid fa-gopuram"></i>
+        <div class="max-w-7xl mx-auto px-3.5 sm:px-6 py-2.5 sm:py-3 flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white shadow-xs shrink-0">
+                    <i class="fa-solid fa-gopuram text-sm"></i>
                 </div>
-                <h1 class="text-lg sm:text-xl font-extrabold tracking-wide font-heading">તીર્થયાત્રા શેડ્યુઅલ મેકર</h1>
+                <div class="truncate">
+                    <h1 class="text-base sm:text-xl font-extrabold tracking-wide font-heading leading-tight truncate">તીર્થયાત્રા શેડ્યુઅલ</h1>
+                    <p class="text-[11px] text-stone-400 hidden sm:block">દિવસ પ્રમાણે તીર્થસ્થાનો ગોઠવો અને HD ફોટો / PDF ડાઉનલોડ કરો</p>
+                </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <button onclick="loadDefaultSchedule()" class="px-3 py-1.5 text-xs bg-stone-800 hover:bg-stone-700 text-amber-300 rounded-lg border border-stone-700 font-semibold transition">
-                    <i class="fa-solid fa-rotate mr-1"></i>તૈયાર લિસ્ટ લોડ કરો
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <button onclick="loadDefaultSchedule()" class="px-2.5 sm:px-3 py-1.5 text-xs bg-stone-800 hover:bg-stone-700 active:scale-95 text-amber-300 rounded-xl border border-stone-700 font-bold transition flex items-center gap-1">
+                    <i class="fa-solid fa-rotate"></i>
+                    <span class="hidden xs:inline">તૈયાર લિસ્ટ</span>
                 </button>
-                <button onclick="clearAllDays()" class="px-3 py-1.5 text-xs bg-red-500/20 hover:bg-red-600 text-red-200 hover:text-white rounded-lg border border-red-500/30 font-semibold transition">
-                    <i class="fa-solid fa-trash-can mr-1"></i>બધું ખાલી કરો
+                <button onclick="clearAllDays()" class="px-2.5 sm:px-3 py-1.5 text-xs bg-red-500/20 hover:bg-red-600 active:scale-95 text-red-200 hover:text-white rounded-xl border border-red-500/30 font-bold transition flex items-center gap-1">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>ખાલી કરો</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-6 flex-grow">
+    <!-- ========================================================= -->
+    <!-- STICKY ACTIVE DAY BAR (SUPER EASY FOR MOBILE THUMB)       -->
+    <!-- ========================================================= -->
+    <div id="stickyDayBar" class="sticky top-[53px] sm:top-[61px] z-30 bg-white/95 backdrop-blur-md border-b border-orange-200 shadow-xs">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2">
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="text-[11px] sm:text-xs font-extrabold text-stone-600 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-orange-600 animate-pulse"></span>
+                    <span>કયા દિવસમાં તીર્થ ઉમેરવું છે? ટેપ કરો:</span>
+                </span>
+                <span id="activeDayIndicatorBadge" class="text-[11px] font-extrabold bg-orange-100 text-orange-800 border border-orange-300 px-2.5 py-0.5 rounded-lg">
+                    દિવસ ૧ પસંદ કરેલ
+                </span>
+            </div>
+            <!-- Horizontal Scrollable Pills on Mobile -->
+            <div id="daySelectorPills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MAIN WORKSPACE                                            -->
+    <!-- ========================================================= -->
+    <main class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-grow">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-            <!-- ========================================================= -->
-            <!-- LEFT PANEL: TIRTH STHAN LIST & DAY ARRANGE (7 COLUMNS)    -->
-            <!-- ========================================================= -->
-            <div class="lg:col-span-7 space-y-5">
+            <!-- ===================================================== -->
+            <!-- LEFT / TAB 1: EDITOR VIEW (7 COLUMNS ON DESKTOP)      -->
+            <!-- ===================================================== -->
+            <div id="mobileTabEditor" class="lg:col-span-7 space-y-4 sm:space-y-5">
 
-                <!-- 1. Minimal Title & Optional Date Bar -->
-                <div class="bg-white rounded-2xl shadow-xs border border-stone-200 p-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-                        <div class="sm:col-span-6">
-                            <label class="block text-xs font-bold text-stone-600 mb-1">શીર્ષક (Title)</label>
-                            <input type="text" id="titleInput" oninput="updateHeaderState()" placeholder="તીર્થયાત્રા સમયપત્રક"
-                                class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:border-orange-500 outline-none font-bold text-sm text-stone-900">
+                <!-- 1. STEP 1: TOTAL DAYS GENERATOR & TITLE -->
+                <div class="bg-white rounded-2xl shadow-xs border-2 border-orange-200/80 overflow-hidden">
+                    <div class="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-3.5 sm:px-4 py-2.5 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-white text-orange-700 font-extrabold text-[11px] px-2 py-0.5 rounded-md">સ્ટેપ ૧</span>
+                            <h2 class="text-sm sm:text-base font-extrabold tracking-wide">યાત્રા કેટલા દિવસની છે?</h2>
                         </div>
-                        <div class="sm:col-span-4">
-                            <label class="block text-xs font-bold text-stone-600 mb-1">શરૂઆતની તારીખ (ઓપ્શનલ)</label>
-                            <input type="date" id="startDateInput" onchange="updateStartDate()"
-                                class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:border-orange-500 outline-none text-sm font-semibold">
+                        <span id="totalDaysBadgeHeader" class="text-xs font-extrabold bg-black/20 px-2.5 py-0.5 rounded-lg">કુલ ૮ દિવસ</span>
+                    </div>
+
+                    <div class="p-3.5 sm:p-4 space-y-3.5">
+                        <!-- Stepper Row -->
+                        <div class="flex items-center justify-between gap-2 bg-orange-50/60 border border-orange-200/80 rounded-xl p-2.5 sm:p-3">
+                            <div class="min-w-0">
+                                <div class="text-xs sm:text-sm font-extrabold text-stone-800">કુલ દિવસોની સંખ્યા:</div>
+                                <div class="text-[11px] text-stone-500">આપોઆપ દિવસોના ખાના બની જશે</div>
+                            </div>
+
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button onclick="adjustTotalDays(-1)" class="w-10 h-10 rounded-xl bg-white hover:bg-orange-100 active:scale-90 text-stone-800 font-extrabold border border-stone-300 shadow-2xs flex items-center justify-center transition">
+                                    <i class="fa-solid fa-minus text-xs"></i>
+                                </button>
+                                <input type="number" id="totalDaysInput" min="1" max="60" value="8"
+                                    onchange="setExactTotalDays(this.value)"
+                                    class="w-14 sm:w-16 h-10 text-center font-extrabold text-base sm:text-lg text-orange-700 bg-white border-2 border-orange-400 rounded-xl outline-none">
+                                <button onclick="adjustTotalDays(1)" class="w-10 h-10 rounded-xl bg-white hover:bg-orange-100 active:scale-90 text-stone-800 font-extrabold border border-stone-300 shadow-2xs flex items-center justify-center transition">
+                                    <i class="fa-solid fa-plus text-xs"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="sm:col-span-2">
-                            <label class="flex items-center gap-2 cursor-pointer bg-stone-100 hover:bg-stone-200 px-3 py-2 rounded-xl border border-stone-200 text-xs font-bold text-stone-700 select-none">
-                                <input type="checkbox" id="showDateToggle" onchange="updateHeaderState()" class="accent-orange-600 w-4 h-4">
-                                <span>તારીખ બતાવો</span>
-                            </label>
+
+                        <!-- Quick Day Count Presets (Horizontal Scroll on Phone) -->
+                        <div>
+                            <div class="text-[11px] font-bold text-stone-500 mb-1.5">ઝડપી દિવસ પસંદગી:</div>
+                            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                                <button onclick="setExactTotalDays(3)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૩ દિવસ</button>
+                                <button onclick="setExactTotalDays(5)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૫ દિવસ</button>
+                                <button onclick="setExactTotalDays(7)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૭ દિવસ</button>
+                                <button onclick="setExactTotalDays(8)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૮ દિવસ</button>
+                                <button onclick="setExactTotalDays(10)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૧૦ દિવસ</button>
+                                <button onclick="setExactTotalDays(12)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૧૨ દિવસ</button>
+                                <button onclick="setExactTotalDays(15)" class="day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 active:scale-95 transition">૧૫ દિવસ</button>
+                            </div>
+                        </div>
+
+                        <!-- Title & Optional Start Date -->
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2.5 border-t border-stone-100 items-end">
+                            <div class="sm:col-span-6">
+                                <label class="block text-[11px] font-bold text-stone-600 mb-1">યાત્રાનું શીર્ષક (Title)</label>
+                                <input type="text" id="titleInput" oninput="updateHeaderState()" placeholder="તીર્થયાત્રા સમયપત્રક"
+                                    class="w-full px-3 py-2.5 rounded-xl border border-stone-300 focus:border-orange-500 outline-none font-bold text-sm text-stone-900 bg-stone-50/50 focus:bg-white">
+                            </div>
+                            <div class="grid grid-cols-12 gap-2 sm:col-span-6 items-end">
+                                <div class="col-span-7">
+                                    <label class="block text-[11px] font-bold text-stone-600 mb-1">શરૂઆતની તારીખ (ઓપ્શનલ)</label>
+                                    <input type="date" id="startDateInput" onchange="updateStartDate()"
+                                        class="w-full px-2.5 py-2 rounded-xl border border-stone-300 focus:border-orange-500 outline-none text-xs sm:text-sm font-semibold bg-stone-50/50">
+                                </div>
+                                <div class="col-span-5">
+                                    <label class="flex items-center justify-center gap-1.5 cursor-pointer bg-stone-100 hover:bg-stone-200 px-2.5 py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-700 select-none">
+                                        <input type="checkbox" id="showDateToggle" onchange="updateHeaderState()" class="accent-orange-600 w-4 h-4">
+                                        <span>તારીખ બતાવો</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. Tirth Sthan Selection Bank -->
+                <!-- 2. STEP 2: TOUCH-FRIENDLY 2-COLUMN TIRTH BANK -->
                 <div class="bg-white rounded-2xl shadow-xs border border-stone-200 overflow-hidden">
-                    <div class="bg-orange-50/80 px-4 py-3 border-b border-orange-200/70 flex flex-wrap justify-between items-center gap-2">
-                        <div>
-                            <h2 class="text-sm sm:text-base font-extrabold text-stone-800 flex items-center gap-2">
-                                <i class="fa-solid fa-location-dot text-orange-600"></i>
-                                <span>તીર્થસ્થાનનું લિસ્ટ (ક્લિક કરીને દિવસમાં ઉમેરો)</span>
-                            </h2>
-                            <p class="text-[11px] text-stone-500">નીચેના તીર્થસ્થાન પર ક્લિક કરતાની સાથે જ તે પસંદ કરેલા દિવસમાં ઉમેરાઈ જશે</p>
+                    <div class="bg-stone-900 text-white px-3.5 sm:px-4 py-2.5 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-orange-500 text-white font-extrabold text-[11px] px-2 py-0.5 rounded-md">સ્ટેપ ૨</span>
+                            <h2 class="text-sm sm:text-base font-extrabold">તીર્થસ્થાન પર ટચ કરીને ઉમેરો</h2>
                         </div>
-
-                        <!-- Target Day Selector -->
-                        <div class="flex items-center gap-1.5 bg-white border border-orange-300 px-2.5 py-1 rounded-xl shadow-2xs">
-                            <span class="text-xs font-bold text-stone-600">ઉમેરવાનો દિવસ:</span>
-                            <select id="activeDaySelect" onchange="setActiveDay(this.value)" class="text-xs font-extrabold text-orange-700 bg-transparent outline-none cursor-pointer">
-                                <!-- Populated by JS -->
-                            </select>
-                        </div>
+                        <span id="step2TargetDayLabel" class="text-[11px] font-bold text-amber-300">→ દિવસ ૧ માં ઉમેરાશે</span>
                     </div>
 
-                    <div class="p-4 space-y-4">
-                        <!-- Group A: Main Requested Tirths -->
+                    <div class="p-3.5 sm:p-4 space-y-4">
+                        <!-- Group A: Main Requested Tirths (2-Column Grid on Phone, 3-4 on Desktop) -->
                         <div>
-                            <div class="text-xs font-bold text-stone-500 mb-2 flex items-center gap-1.5">
-                                <span>🚩 મુખ્ય તીર્થસ્થાનો (વ્રજ, ઉત્તર ભારત, નેપાળ અને રાજસ્થાન):</span>
+                            <div class="text-xs font-extrabold text-stone-600 mb-2 flex items-center justify-between">
+                                <span>🚩 મુખ્ય તીર્થસ્થાનો:</span>
+                                <span class="text-[11px] font-semibold text-stone-400">ટચ કરો એટલે ઉમેરાઈ જશે</span>
                             </div>
-                            <div id="mainTirthChips" class="flex flex-wrap gap-2">
+                            <div id="mainTirthChips" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                                 <!-- Populated by JS -->
                             </div>
                         </div>
 
                         <!-- Group B: Char Dham Tirths -->
                         <div class="pt-3 border-t border-stone-100">
-                            <div class="text-xs font-bold text-stone-500 mb-2 flex items-center gap-1.5">
-                                <span>⛰️ ચાર ધામ તીર્થસ્થાનો:</span>
+                            <div class="text-xs font-extrabold text-stone-600 mb-2">
+                                <span>⛰️ ચાર ધામ અને અન્ય તીર્થસ્થાનો:</span>
                             </div>
-                            <div id="charDhamChips" class="flex flex-wrap gap-2">
+                            <div id="charDhamChips" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                                 <!-- Populated by JS -->
                             </div>
                         </div>
 
                         <!-- Group C: Add Custom Tirth Name -->
                         <div class="pt-3 border-t border-stone-100 flex gap-2">
-                            <input type="text" id="customTirthInput" placeholder="બીજું કોઈ તીર્થસ્થાનનું નામ લખીને ઉમેરો..."
+                            <input type="text" id="customTirthInput" placeholder="બીજું કોઈ તીર્થસ્થાનનું નામ લખો..."
                                 onkeydown="if(event.key==='Enter') addCustomTirth()"
-                                class="flex-grow px-3.5 py-2 rounded-xl border border-stone-300 focus:border-orange-500 outline-none text-xs sm:text-sm font-bold">
-                            <button onclick="addCustomTirth()" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-xs sm:text-sm transition shrink-0 flex items-center gap-1.5">
+                                class="flex-grow px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-orange-500 outline-none text-xs sm:text-sm font-bold bg-stone-50 focus:bg-white">
+                            <button onclick="addCustomTirth()" class="px-4 py-2.5 bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shrink-0 flex items-center gap-1.5 shadow-xs">
                                 <i class="fa-solid fa-plus"></i>
                                 <span>ઉમેરો</span>
                             </button>
@@ -213,86 +291,96 @@
                     </div>
                 </div>
 
-                <!-- 3. Day-wise Schedule Organizer -->
+                <!-- 3. STEP 3: DAY-WISE SCHEDULE ORGANIZER -->
                 <div class="space-y-3">
                     <div class="flex flex-wrap justify-between items-center gap-2 px-1">
                         <div>
-                            <h2 class="text-base font-extrabold text-stone-800">દિવસ પ્રમાણે ગોઠવણી (Drag & Drop)</h2>
-                            <p class="text-xs text-stone-500">તીર્થસ્થાનને ખેંચીને (Drag કરીને) એક દિવસમાંથી બીજા દિવસમાં અથવા ઉપર-નીચે ગોઠવી શકો છો</p>
+                            <div class="flex items-center gap-2">
+                                <span class="bg-stone-800 text-white font-extrabold text-[11px] px-2 py-0.5 rounded-md">સ્ટેપ ૩</span>
+                                <h2 class="text-sm sm:text-base font-extrabold text-stone-800">દિવસ પ્રમાણે ગોઠવણી (ક્રમ બદલો / સુધારો)</h2>
+                            </div>
+                            <p class="text-[11px] text-stone-500 mt-0.5">તીર્થનું નામ બદલવા તેના પર ટચ કરો અથવા ↑ ↓ બટનથી ક્રમ ગોઠવો</p>
                         </div>
-                        <button onclick="addNewDay()" class="px-3.5 py-2 bg-stone-900 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        <button onclick="addNewDay()" class="px-3.5 py-2 bg-stone-900 hover:bg-orange-600 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
                             <i class="fa-solid fa-plus"></i>
-                            <span>નવો દિવસ ઉમેરો</span>
+                            <span>+ ૧ દિવસ વધારો</span>
                         </button>
                     </div>
 
                     <!-- Days Container -->
-                    <div id="daysBuilderContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div id="daysBuilderContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <!-- Rendered by JS -->
                     </div>
                 </div>
 
             </div>
 
-            <!-- ========================================================= -->
-            <!-- RIGHT PANEL: CLEAN SCHEDULE PREVIEW & DOWNLOAD (5 COLS)   -->
-            <!-- ========================================================= -->
-            <div class="lg:col-span-5 lg:sticky lg:top-20 space-y-4">
+            <!-- ===================================================== -->
+            <!-- RIGHT / TAB 2: PREVIEW & DOWNLOAD (5 COLS ON DESKTOP) -->
+            <!-- ===================================================== -->
+            <div id="mobileTabPreview" class="hidden lg:block lg:col-span-5 lg:sticky lg:top-28 space-y-4">
 
-                <!-- Controls Bar -->
-                <div class="bg-white rounded-2xl shadow-xs border border-stone-200 p-4 space-y-3">
-                    <!-- Download Buttons -->
-                    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-100">
-                        <span class="text-xs sm:text-sm font-extrabold text-stone-800">શેડ્યુઅલ ડાઉનલોડ કરો:</span>
-                        <div class="flex gap-2 w-full sm:w-auto">
-                            <button id="btnDownloadPng" onclick="downloadPhoto()" class="flex-1 sm:flex-initial px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-image"></i>
-                                <span>HD ફોટો (PNG)</span>
-                            </button>
-                            <button id="btnDownloadPdf" onclick="downloadPDF()" class="flex-1 sm:flex-initial px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-file-pdf"></i>
-                                <span>PDF ડાઉનલોડ</span>
-                            </button>
-                        </div>
+                <!-- Controls & Big Download Card -->
+                <div class="bg-white rounded-2xl shadow-xs border border-stone-200 p-3.5 sm:p-4 space-y-3.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-extrabold text-stone-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-download text-orange-600"></i>
+                            <span>હાઈ-ક્વોલિટી ડાઉનલોડ:</span>
+                        </span>
+                        <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                            HD Print Ready
+                        </span>
+                    </div>
+
+                    <!-- Big Thumb-Friendly Download Buttons -->
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button id="btnDownloadPng" onclick="downloadPhoto()" class="py-3 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-image text-base"></i>
+                            <span>HD ફોટો (PNG)</span>
+                        </button>
+                        <button id="btnDownloadPdf" onclick="downloadPDF()" class="py-3 px-3 bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-pdf text-base"></i>
+                            <span>PDF ડાઉનલોડ</span>
+                        </button>
                     </div>
 
                     <!-- Style & Layout Switches -->
-                    <div class="grid grid-cols-3 gap-2 text-xs">
+                    <div class="grid grid-cols-3 gap-2 pt-2 border-t border-stone-100 text-xs">
                         <div>
-                            <label class="block text-[11px] font-bold text-stone-500 mb-1">લેઆઉટ (દેખાવ):</label>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-stone-500 mb-1">લેઆઉટ (દેખાવ):</label>
                             <div class="grid grid-cols-2 gap-1">
-                                <button onclick="setLayout('table')" id="btnLayout_table" class="py-1 px-2 rounded-lg font-bold border text-[11px]">ટેબલ</button>
-                                <button onclick="setLayout('cards')" id="btnLayout_cards" class="py-1 px-2 rounded-lg font-bold border text-[11px]">બોક્સ</button>
+                                <button onclick="setLayout('table')" id="btnLayout_table" class="py-1.5 px-1.5 rounded-lg font-bold border text-[11px]">ટેબલ</button>
+                                <button onclick="setLayout('cards')" id="btnLayout_cards" class="py-1.5 px-1.5 rounded-lg font-bold border text-[11px]">બોક્સ</button>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold text-stone-500 mb-1">કલર થીમ:</label>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-stone-500 mb-1">કલર થીમ:</label>
                             <div class="grid grid-cols-3 gap-1">
-                                <button onclick="setTheme('kesari')" id="btnTheme_kesari" class="py-1 px-1.5 rounded-lg font-bold border text-[11px]">કેસરી</button>
-                                <button onclick="setTheme('maroon')" id="btnTheme_maroon" class="py-1 px-1.5 rounded-lg font-bold border text-[11px]">મરૂન</button>
-                                <button onclick="setTheme('white')" id="btnTheme_white" class="py-1 px-1.5 rounded-lg font-bold border text-[11px]">સિમ્પલ</button>
+                                <button onclick="setTheme('kesari')" id="btnTheme_kesari" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">કેસરી</button>
+                                <button onclick="setTheme('maroon')" id="btnTheme_maroon" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">મરૂન</button>
+                                <button onclick="setTheme('white')" id="btnTheme_white" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">સિમ્પલ</button>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold text-stone-500 mb-1">અક્ષર સાઈઝ:</label>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-stone-500 mb-1">અક્ષર સાઈઝ:</label>
                             <div class="grid grid-cols-3 gap-1">
-                                <button onclick="setFontSize('sm')" id="btnFont_sm" class="py-1 px-1.5 rounded-lg font-bold border text-[11px]">નાના</button>
-                                <button onclick="setFontSize('md')" id="btnFont_md" class="py-1 px-1.5 rounded-lg font-bold border text-[11px]">મધ્યમ</button>
-                                <button onclick="setFontSize('lg')" id="btnFont_lg" class="py-1 px-1.5 rounded-lg font-bold border text-[11px]">મોટા</button>
+                                <button onclick="setFontSize('sm')" id="btnFont_sm" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">નાના</button>
+                                <button onclick="setFontSize('md')" id="btnFont_md" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">મધ્યમ</button>
+                                <button onclick="setFontSize('lg')" id="btnFont_lg" class="py-1.5 px-1 rounded-lg font-bold border text-[11px]">મોટા</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- ===================================================== -->
-                <!-- EXPORTABLE SCHEDULE CARD (ZERO EXTRA CLUTTER)         -->
+                <!-- EXPORTABLE SCHEDULE CARD (CLEAN & RESPONSIVE)         -->
                 <!-- ===================================================== -->
-                <div class="overflow-x-auto pb-4">
-                    <div id="scheduleExportCanvas" class="card-theme-kesari rounded-2xl shadow-xl p-5 sm:p-6 mx-auto w-full min-w-[340px]">
+                <div class=" pb-4">
+                    <div id="scheduleExportCanvas" class="card-theme-kesari rounded-2xl shadow-xl p-4 sm:p-6 mx-auto w-full">
                         
                         <!-- Clean Header -->
-                        <div class="card-header rounded-xl py-3.5 px-4 text-center shadow-xs mb-4">
-                            <h2 id="previewTitleText" class="text-xl sm:text-2xl font-extrabold tracking-wide font-heading">
+                        <div class="card-header rounded-xl py-3 sm:py-3.5 px-4 text-center shadow-xs mb-3.5 sm:mb-4">
+                            <h2 id="previewTitleText" class="text-lg sm:text-2xl font-extrabold tracking-wide font-heading">
                                 તીર્થયાત્રા સમયપત્રક
                             </h2>
                         </div>
@@ -310,8 +398,27 @@
         </div>
     </main>
 
-    <!-- TOAST MESSAGE -->
-    <div id="toastMsg" class="fixed bottom-5 right-5 bg-stone-900 text-white px-4 py-2.5 rounded-xl shadow-lg text-xs sm:text-sm font-bold z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <!-- ========================================================= -->
+    <!-- MOBILE BOTTOM NAVIGATION BAR (ONLY ON PHONE/TABLET)       -->
+    <!-- ========================================================= -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-stone-200 shadow-[0_-8px_20px_-4px_rgba(0,0,0,0.1)] px-3 py-2">
+        <div class="max-w-md mx-auto grid grid-cols-2 gap-2.5">
+            <button id="mobileNavBtnEditor" onclick="switchMobileTab('editor')"
+                class="py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-orange-600 text-white shadow-xs">
+                <i class="fa-solid fa-list-check"></i>
+                <span>૧. યાત્રા ગોઠવો</span>
+            </button>
+            <button id="mobileNavBtnPreview" onclick="switchMobileTab('preview')"
+                class="py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-stone-100 text-stone-800 border border-stone-300">
+                <i class="fa-solid fa-eye"></i>
+                <span>૨. કાર્ડ / ડાઉનલોડ</span>
+                <span id="mobileTotalTirthBadge" class="px-1.5 py-0.2 text-[11px] rounded-full bg-orange-100 text-orange-800 font-extrabold">૦</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- TOAST MESSAGE (ABOVE MOBILE NAV) -->
+    <div id="toastMsg" class="fixed bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 bg-stone-900/95 text-white px-4 py-2.5 rounded-xl shadow-xl text-xs sm:text-sm font-bold z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none whitespace-nowrap border border-stone-700">
         <span id="toastText"></span>
     </div>
 
@@ -386,6 +493,7 @@
 
         let state = null;
         let activeDayId = null;
+        let currentMobileTab = 'editor'; // 'editor' or 'preview'
         let sortableInstances = [];
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -393,6 +501,37 @@
             syncHeaderInputs();
             renderAll();
         });
+
+        // Mobile Tab Switching
+        function switchMobileTab(tab) {
+            currentMobileTab = tab;
+            const editorEl = document.getElementById('mobileTabEditor');
+            const previewEl = document.getElementById('mobileTabPreview');
+            const stickyBar = document.getElementById('stickyDayBar');
+            const btnEditor = document.getElementById('mobileNavBtnEditor');
+            const btnPreview = document.getElementById('mobileNavBtnPreview');
+            const badge = document.getElementById('mobileTotalTirthBadge');
+
+            if (tab === 'preview') {
+                editorEl.classList.add('hidden', 'lg:block');
+                previewEl.classList.remove('hidden');
+                stickyBar.classList.add('hidden', 'lg:block');
+
+                btnPreview.className = "py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-orange-600 text-white shadow-xs";
+                btnEditor.className = "py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-stone-100 text-stone-800 border border-stone-300";
+                badge.className = "px-1.5 py-0.2 text-[11px] rounded-full bg-white text-orange-700 font-extrabold";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                editorEl.classList.remove('hidden');
+                previewEl.classList.add('hidden', 'lg:block');
+                stickyBar.classList.remove('hidden');
+
+                btnEditor.className = "py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-orange-600 text-white shadow-xs";
+                btnPreview.className = "py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition bg-stone-100 text-stone-800 border border-stone-300";
+                badge.className = "px-1.5 py-0.2 text-[11px] rounded-full bg-orange-100 text-orange-800 font-extrabold";
+            }
+            renderPreview();
+        }
 
         function loadState() {
             try {
@@ -416,17 +555,48 @@
             } catch (e) {}
         }
 
+        let toastTimer = null;
         function showToast(msg) {
             const el = document.getElementById('toastMsg');
             document.getElementById('toastText').textContent = msg;
-            el.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => el.classList.add('translate-y-20', 'opacity-0'), 2000);
+            el.classList.remove('translate-y-24', 'opacity-0');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.add('translate-y-24', 'opacity-0'), 1800);
         }
 
         function syncHeaderInputs() {
             document.getElementById('titleInput').value = state.title || '';
             document.getElementById('startDateInput').value = state.startDate || '';
             document.getElementById('showDateToggle').checked = !!state.showDate;
+            const totalInput = document.getElementById('totalDaysInput');
+            if (totalInput) totalInput.value = state.days.length;
+        }
+
+        function adjustTotalDays(delta) {
+            const current = state.days.length;
+            setExactTotalDays(current + delta);
+        }
+
+        function setExactTotalDays(val) {
+            let target = parseInt(val, 10);
+            if (isNaN(target) || target < 1) target = 1;
+            if (target > 60) target = 60;
+
+            const current = state.days.length;
+            if (target > current) {
+                for (let i = current; i < target; i++) {
+                    state.days.push({ id: 'd_' + Date.now() + '_' + i, places: [] });
+                }
+                showToast(`કુલ ${toGujNum(target)} દિવસો તૈયાર થઈ ગયા`);
+            } else if (target < current) {
+                state.days = state.days.slice(0, target);
+                if (!state.days.some(d => d.id === activeDayId)) {
+                    activeDayId = state.days[state.days.length - 1].id;
+                }
+                showToast(`કુલ ${toGujNum(target)} દિવસો રાખવામાં આવ્યા`);
+            }
+
+            renderAll();
         }
 
         function updateHeaderState() {
@@ -449,36 +619,90 @@
         function setActiveDay(dayId) {
             activeDayId = dayId;
             renderAll();
+            // Scroll active pill into view horizontally on mobile
+            const activePill = document.getElementById(`pill_${dayId}`);
+            if (activePill) {
+                activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
         }
 
         // 3. RENDER EVERYTHING
         function renderAll() {
-            renderActiveDaySelect();
+            renderDayControlsAndPills();
             renderTirthChips();
             renderDaysBuilder();
             renderPreview();
             saveState();
         }
 
-        function renderActiveDaySelect() {
-            const sel = document.getElementById('activeDaySelect');
-            if (state.days.length === 0) {
-                sel.innerHTML = `<option value="">કોઈ દિવસ નથી</option>`;
-                return;
-            }
-            if (!state.days.some(d => d.id === activeDayId)) {
+        function renderDayControlsAndPills() {
+            const total = state.days.length;
+            const totalInput = document.getElementById('totalDaysInput');
+            if (totalInput) totalInput.value = total;
+
+            const badgeHeader = document.getElementById('totalDaysBadgeHeader');
+            if (badgeHeader) badgeHeader.textContent = `કુલ ${toGujNum(total)} દિવસ`;
+
+            // Update total places badge in mobile bottom bar
+            const totalPlaces = state.days.reduce((acc, d) => acc + d.places.length, 0);
+            const mobileBadge = document.getElementById('mobileTotalTirthBadge');
+            if (mobileBadge) mobileBadge.textContent = toGujNum(totalPlaces);
+
+            // Highlight matching preset button
+            document.querySelectorAll('.day-preset-btn').forEach(btn => {
+                const matchNum = parseInt(btn.getAttribute('onclick').replace(/\D/g, ''), 10);
+                if (matchNum === total) {
+                    btn.className = "day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-extrabold border border-orange-600 bg-orange-600 text-white shadow-2xs transition";
+                } else {
+                    btn.className = "day-preset-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold border border-stone-200 bg-stone-50 hover:bg-orange-50 text-stone-700 transition";
+                }
+            });
+
+            if (state.days.length > 0 && !state.days.some(d => d.id === activeDayId)) {
                 activeDayId = state.days[0].id;
             }
-            sel.innerHTML = state.days.map((d, idx) => `
-                <option value="${d.id}" ${d.id === activeDayId ? 'selected' : ''}>
-                    દિવસ ${toGujNum(idx + 1)}
-                </option>
-            `).join('');
+
+            const activeIdx = state.days.findIndex(d => d.id === activeDayId);
+            const activeBadge = document.getElementById('activeDayIndicatorBadge');
+            if (activeBadge && activeIdx !== -1) {
+                activeBadge.innerHTML = `દિવસ ${toGujNum(activeIdx + 1)} પસંદ કરેલ`;
+            }
+
+            const step2Label = document.getElementById('step2TargetDayLabel');
+            if (step2Label && activeIdx !== -1) {
+                step2Label.textContent = `→ દિવસ ${toGujNum(activeIdx + 1)} માં ઉમેરાશે`;
+            }
+
+            const pillsContainer = document.getElementById('daySelectorPills');
+            if (!pillsContainer) return;
+
+            pillsContainer.innerHTML = state.days.map((d, idx) => {
+                const isSelected = d.id === activeDayId;
+                const count = d.places.length;
+                return `
+                    <button id="pill_${d.id}" onclick="setActiveDay('${d.id}')"
+                        class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-extrabold border transition flex items-center gap-1.5 active:scale-95 ${
+                            isSelected
+                            ? 'bg-orange-600 text-white border-orange-700 shadow-xs'
+                            : 'bg-stone-100 text-stone-700 border-stone-300 hover:border-orange-400'
+                        }">
+                        <span>દિવસ ${toGujNum(idx + 1)}</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] ${
+                            isSelected
+                            ? 'bg-white text-orange-700'
+                            : (count > 0 ? 'bg-emerald-600 text-white' : 'bg-stone-200 text-stone-600')
+                        }">${toGujNum(count)}</span>
+                    </button>
+                `;
+            }).join('');
         }
 
-        // Check if a Tirth is already placed in any day
-        function isTirthUsed(name) {
-            return state.days.some(d => d.places.includes(name));
+        // Find which day a Tirth is placed in (returns 1-based day index or 0)
+        function getTirthDayNumber(name) {
+            for (let i = 0; i < state.days.length; i++) {
+                if (state.days[i].places.includes(name)) return i + 1;
+            }
+            return 0;
         }
 
         function renderTirthChips() {
@@ -486,32 +710,40 @@
             const allMain = [...MAIN_TIRTH_LIST, ...(state.customTirths || [])];
 
             mainContainer.innerHTML = allMain.map(name => {
-                const used = isTirthUsed(name);
+                const dayNum = getTirthDayNumber(name);
+                const used = dayNum > 0;
                 return `
                     <button onclick="addTirthToActiveDay('${escapeHtml(name)}')"
-                        class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold border transition flex items-center gap-1.5 ${
+                        class="px-3 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold border text-left transition flex items-center justify-between gap-1.5 active:scale-95 ${
                             used 
-                            ? 'bg-emerald-50 border-emerald-300 text-emerald-900 hover:bg-emerald-100' 
-                            : 'bg-stone-50 border-stone-300 text-stone-800 hover:bg-orange-600 hover:text-white hover:border-orange-600'
+                            ? 'bg-emerald-50 border-emerald-400 text-emerald-950 shadow-2xs' 
+                            : 'bg-stone-50 border-stone-300 text-stone-800 hover:border-orange-500 hover:bg-orange-50/50'
                         }">
-                        <i class="fa-solid ${used ? 'fa-check text-emerald-600' : 'fa-plus text-orange-500'} text-[11px]"></i>
-                        <span>${escapeHtml(name)}</span>
+                        <span class="truncate">${escapeHtml(name)}</span>
+                        ${used 
+                            ? `<span class="shrink-0 text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-md font-bold">દિ.${toGujNum(dayNum)} ✓</span>`
+                            : `<i class="fa-solid fa-plus text-orange-600 text-xs shrink-0"></i>`
+                        }
                     </button>
                 `;
             }).join('');
 
             const charDhamContainer = document.getElementById('charDhamChips');
             charDhamContainer.innerHTML = CHAR_DHAM_LIST.map(name => {
-                const used = isTirthUsed(name);
+                const dayNum = getTirthDayNumber(name);
+                const used = dayNum > 0;
                 return `
                     <button onclick="addTirthToActiveDay('${escapeHtml(name)}')"
-                        class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold border transition flex items-center gap-1.5 ${
+                        class="px-3 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold border text-left transition flex items-center justify-between gap-1.5 active:scale-95 ${
                             used 
-                            ? 'bg-emerald-50 border-emerald-300 text-emerald-900 hover:bg-emerald-100' 
-                            : 'bg-orange-50/60 border-orange-200 text-stone-800 hover:bg-orange-600 hover:text-white hover:border-orange-600'
+                            ? 'bg-emerald-50 border-emerald-400 text-emerald-950 shadow-2xs' 
+                            : 'bg-orange-50/50 border-orange-200 text-stone-800 hover:border-orange-500 hover:bg-orange-100/50'
                         }">
-                        <i class="fa-solid ${used ? 'fa-check text-emerald-600' : 'fa-plus text-orange-500'} text-[11px]"></i>
-                        <span>${escapeHtml(name)}</span>
+                        <span class="truncate">${escapeHtml(name)}</span>
+                        ${used 
+                            ? `<span class="shrink-0 text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-md font-bold">દિ.${toGujNum(dayNum)} ✓</span>`
+                            : `<i class="fa-solid fa-plus text-orange-600 text-xs shrink-0"></i>`
+                        }
                     </button>
                 `;
             }).join('');
@@ -526,7 +758,7 @@
             targetDay.places.push(name);
             const dayIdx = state.days.indexOf(targetDay) + 1;
             renderAll();
-            showToast(`"${name}" દિવસ ${toGujNum(dayIdx)} માં ઉમેરાયું`);
+            showToast(`"${name}" → દિવસ ${toGujNum(dayIdx)} માં ઉમેરાયું`);
         }
 
         function addCustomTirth() {
@@ -551,30 +783,31 @@
                 const dateLabel = (state.showDate && state.startDate) ? formatShortGujDate(state.startDate, dIdx) : '';
 
                 const placesHtml = day.places.length === 0
-                    ? `<div class="text-center py-4 text-xs text-stone-400 border border-dashed border-stone-200 rounded-xl">
-                        ઉપરથી તીર્થસ્થાન પર ક્લિક કરીને અહીં ઉમેરો
+                    ? `<div class="text-center py-4 px-2 text-xs ${isSelected ? 'text-orange-700 font-bold bg-orange-50/60 border-orange-300' : 'text-stone-400 border-stone-200'} border border-dashed rounded-xl">
+                        ${isSelected ? '👆 ઉપરના લિસ્ટમાંથી તીર્થસ્થાન પર ટચ કરો એટલે અહીં ઉમેરાશે' : 'આ દિવસમાં તીર્થ ઉમેરવા અહીં ટચ કરો'}
                        </div>`
                     : day.places.map((pName, pIdx) => `
-                        <div class="bg-stone-50 hover:bg-orange-50/60 border border-stone-200 rounded-xl px-2.5 py-2 flex items-center justify-between gap-2 group">
-                            <div class="flex items-center gap-2 min-w-0 flex-grow">
-                                <span class="drag-handle text-stone-400 hover:text-orange-600 px-1 cursor-grab" title="ખેંચીને ક્રમ બદલો">
+                        <div class="bg-stone-50 border border-stone-200/90 rounded-xl px-2.5 py-2 flex items-center justify-between gap-1.5">
+                            <div class="flex items-center gap-1.5 min-w-0 flex-grow">
+                                <span class="drag-handle text-stone-400 hover:text-orange-600 px-1 py-0.5 cursor-grab" title="ખેંચીને ક્રમ બદલો">
                                     <i class="fa-solid fa-grip-vertical text-xs"></i>
                                 </span>
                                 <input type="text" value="${escapeHtml(pName)}"
+                                    onclick="event.stopPropagation()"
                                     oninput="editPlaceName('${day.id}', ${pIdx}, this.value)"
-                                    class="bg-transparent font-bold text-stone-800 text-xs sm:text-sm outline-none focus:bg-white focus:px-1.5 rounded w-full">
+                                    class="bg-transparent font-extrabold text-stone-800 text-xs sm:text-sm outline-none focus:bg-white focus:ring-1 focus:ring-orange-400 focus:px-1.5 rounded w-full">
                             </div>
                             <div class="flex items-center gap-1 shrink-0">
                                 <button onclick="event.stopPropagation(); movePlace('${day.id}', ${pIdx}, -1)" ${pIdx === 0 ? 'disabled' : ''}
-                                    class="w-6 h-6 rounded bg-white border border-stone-200 text-stone-500 hover:text-orange-600 disabled:opacity-30 text-[10px] flex items-center justify-center">
+                                    class="w-7 h-7 rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-orange-600 active:scale-90 disabled:opacity-30 text-xs flex items-center justify-center">
                                     <i class="fa-solid fa-arrow-up"></i>
                                 </button>
                                 <button onclick="event.stopPropagation(); movePlace('${day.id}', ${pIdx}, 1)" ${pIdx === day.places.length - 1 ? 'disabled' : ''}
-                                    class="w-6 h-6 rounded bg-white border border-stone-200 text-stone-500 hover:text-orange-600 disabled:opacity-30 text-[10px] flex items-center justify-center">
+                                    class="w-7 h-7 rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-orange-600 active:scale-90 disabled:opacity-30 text-xs flex items-center justify-center">
                                     <i class="fa-solid fa-arrow-down"></i>
                                 </button>
                                 <button onclick="event.stopPropagation(); removePlace('${day.id}', ${pIdx})"
-                                    class="w-6 h-6 rounded bg-red-50 hover:bg-red-600 text-red-500 hover:text-white text-[10px] flex items-center justify-center transition">
+                                    class="w-7 h-7 rounded-lg bg-red-50 hover:bg-red-600 active:scale-90 text-red-600 hover:text-white text-xs flex items-center justify-center transition">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
@@ -584,41 +817,42 @@
                 return `
                     <div onclick="setActiveDay('${day.id}')"
                         class="bg-white rounded-2xl border-2 transition overflow-hidden flex flex-col cursor-pointer ${
-                            isSelected ? 'border-orange-500 ring-2 ring-orange-200' : 'border-stone-200 hover:border-stone-300'
+                            isSelected ? 'border-orange-500 ring-2 ring-orange-200 shadow-sm' : 'border-stone-200 hover:border-stone-300'
                         }">
                         <!-- Day Header -->
-                        <div class="px-3.5 py-2.5 bg-stone-900 text-white flex justify-between items-center">
+                        <div class="px-3.5 py-2.5 ${isSelected ? 'bg-orange-600' : 'bg-stone-900'} text-white flex justify-between items-center transition-colors">
                             <div class="flex items-center gap-2">
-                                <span class="bg-orange-600 text-white font-extrabold px-2.5 py-0.5 rounded-lg text-xs">
+                                <span class="${isSelected ? 'bg-white text-orange-700' : 'bg-orange-600 text-white'} font-extrabold px-2.5 py-0.5 rounded-lg text-xs">
                                     દિવસ ${toGujNum(dIdx + 1)}
                                 </span>
-                                ${dateLabel ? `<span class="text-[11px] text-amber-200 font-semibold">${dateLabel}</span>` : ''}
+                                ${dateLabel ? `<span class="text-[11px] text-amber-100 font-semibold">${dateLabel}</span>` : ''}
+                                ${isSelected ? `<span class="text-[10px] bg-black/20 px-2 py-0.5 rounded-full font-bold">પસંદ કરેલ</span>` : ''}
                             </div>
                             <div class="flex items-center gap-1">
                                 <button onclick="event.stopPropagation(); moveDay(${dIdx}, -1)" ${dIdx === 0 ? 'disabled' : ''}
-                                    class="w-6 h-6 rounded bg-white/10 hover:bg-white/20 disabled:opacity-25 text-xs flex items-center justify-center" title="દિવસ આગળ ખસેડો">
+                                    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-25 text-xs flex items-center justify-center" title="દિવસ ઉપર ખસેડો">
                                     <i class="fa-solid fa-chevron-left"></i>
                                 </button>
                                 <button onclick="event.stopPropagation(); moveDay(${dIdx}, 1)" ${dIdx === state.days.length - 1 ? 'disabled' : ''}
-                                    class="w-6 h-6 rounded bg-white/10 hover:bg-white/20 disabled:opacity-25 text-xs flex items-center justify-center" title="દિવસ પાછળ ખસેડો">
+                                    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-25 text-xs flex items-center justify-center" title="દિવસ નીચે ખસેડો">
                                     <i class="fa-solid fa-chevron-right"></i>
                                 </button>
                                 <button onclick="event.stopPropagation(); deleteDay('${day.id}')"
-                                    class="w-6 h-6 rounded bg-red-500/80 hover:bg-red-600 text-white text-xs flex items-center justify-center" title="દિવસ કાઢી નાખો">
-                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                    class="w-7 h-7 rounded-lg bg-red-500/80 hover:bg-red-600 text-white text-xs flex items-center justify-center" title="દિવસ કાઢી નાખો">
+                                    <i class="fa-solid fa-trash-can text-[11px]"></i>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Sortable Places List -->
-                        <div id="sortableDay_${day.id}" data-day-id="${day.id}" class="p-3 space-y-2 flex-grow min-h-[70px]">
+                        <div id="sortableDay_${day.id}" data-day-id="${day.id}" class="p-2.5 sm:p-3 space-y-2 flex-grow min-h-[68px]">
                             ${placesHtml}
                         </div>
                     </div>
                 `;
             }).join('');
 
-            // Initialize SortableJS so user can drag Tirths within or across days
+            // Initialize SortableJS
             state.days.forEach(day => {
                 const el = document.getElementById(`sortableDay_${day.id}`);
                 if (el) {
@@ -707,10 +941,12 @@
         }
 
         function clearAllDays() {
-            state.days = [{ id: 'd_' + Date.now(), places: [] }];
-            activeDayId = state.days[0].id;
+            state.days.forEach(d => d.places = []);
+            if (state.days.length > 0) {
+                activeDayId = state.days[0].id;
+            }
             renderAll();
-            showToast("લિસ્ટ ખાલી કરવામાં આવ્યું");
+            showToast("બધા દિવસોમાંથી તીર્થસ્થાનો ખાલી કર્યા");
         }
 
         function loadDefaultSchedule() {
@@ -747,17 +983,17 @@
 
             // Active button styles
             ['table', 'cards'].forEach(l => {
-                document.getElementById(`btnLayout_${l}`).className = `py-1 px-2 rounded-lg font-bold border text-[11px] transition ${layout === l ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 text-stone-700 border-stone-200'}`;
+                document.getElementById(`btnLayout_${l}`).className = `py-1.5 px-1.5 rounded-lg font-bold border text-[11px] transition ${layout === l ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 text-stone-700 border-stone-200'}`;
             });
             ['kesari', 'maroon', 'white'].forEach(t => {
-                document.getElementById(`btnTheme_${t}`).className = `py-1 px-1.5 rounded-lg font-bold border text-[11px] transition ${theme === t ? 'bg-orange-600 text-white border-orange-600' : 'bg-stone-50 text-stone-700 border-stone-200'}`;
+                document.getElementById(`btnTheme_${t}`).className = `py-1.5 px-1 rounded-lg font-bold border text-[11px] transition ${theme === t ? 'bg-orange-600 text-white border-orange-600' : 'bg-stone-50 text-stone-700 border-stone-200'}`;
             });
             ['sm', 'md', 'lg'].forEach(s => {
-                document.getElementById(`btnFont_${s}`).className = `py-1 px-1.5 rounded-lg font-bold border text-[11px] transition ${fontSize === s ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 text-stone-700 border-stone-200'}`;
+                document.getElementById(`btnFont_${s}`).className = `py-1.5 px-1 rounded-lg font-bold border text-[11px] transition ${fontSize === s ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 text-stone-700 border-stone-200'}`;
             });
 
             const canvas = document.getElementById('scheduleExportCanvas');
-            canvas.className = `card-theme-${theme} rounded-2xl shadow-xl p-5 sm:p-6 mx-auto w-full min-w-[340px]`;
+            canvas.className = `card-theme-${theme} rounded-2xl shadow-xl p-4 sm:p-6 mx-auto w-full`;
 
             const titleEl = document.getElementById('previewTitleText');
             titleEl.textContent = (state.title && state.title.trim()) ? state.title : 'તીર્થયાત્રા સમયપત્રક';
@@ -773,13 +1009,13 @@
                     const dateStr = showDates ? formatShortGujDate(state.startDate, idx) : '';
                     return `
                         <tr class="border-b border-stone-200 last:border-0">
-                            <td class="py-3 px-3 font-extrabold whitespace-nowrap align-middle w-24 text-center border-r border-stone-200">
-                                <span class="day-badge inline-block px-2.5 py-1 rounded-lg text-xs sm:text-sm">
+                            <td class="py-2.5 sm:py-3 px-2.5 sm:px-3 font-extrabold whitespace-nowrap align-middle w-20 sm:w-24 text-center border-r border-stone-200">
+                                <span class="day-badge inline-block px-2 sm:px-2.5 py-1 rounded-lg text-xs sm:text-sm">
                                     દિવસ ${toGujNum(idx + 1)}
                                 </span>
-                                ${dateStr ? `<div class="text-[11px] text-stone-600 font-bold mt-1">${dateStr}</div>` : ''}
+                                ${dateStr ? `<div class="text-[10px] sm:text-[11px] text-stone-600 font-bold mt-1">${dateStr}</div>` : ''}
                             </td>
-                            <td class="py-3 px-4 font-extrabold text-stone-900 ${textSizeCls} leading-relaxed align-middle">
+                            <td class="py-2.5 sm:py-3 px-3 sm:px-4 font-extrabold text-stone-900 ${textSizeCls} leading-relaxed align-middle">
                                 ${escapeHtml(placesStr)}
                             </td>
                         </tr>
@@ -791,8 +1027,8 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-stone-100/90 border-b-2 border-stone-200 text-stone-700 text-xs sm:text-sm font-extrabold">
-                                    <th class="py-2.5 px-3 text-center border-r border-stone-200 w-24">દિવસ</th>
-                                    <th class="py-2.5 px-4">તીર્થસ્થાનનું નામ</th>
+                                    <th class="py-2.5 px-2.5 text-center border-r border-stone-200 w-20 sm:w-24">દિવસ</th>
+                                    <th class="py-2.5 px-3 sm:px-4">તીર્થસ્થાનનું નામ</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -806,21 +1042,21 @@
                 const cardsHtml = state.days.map((day, idx) => {
                     const dateStr = showDates ? formatShortGujDate(state.startDate, idx) : '';
                     const badges = day.places.filter(Boolean).map(p => `
-                        <span class="inline-flex items-center gap-1.5 font-extrabold text-stone-900 ${textSizeCls} bg-stone-100/80 border border-stone-300/80 px-3 py-1 rounded-xl">
+                        <span class="inline-flex items-center gap-1.5 font-extrabold text-stone-900 ${textSizeCls} bg-stone-100/80 border border-stone-300/80 px-2.5 py-1 rounded-xl">
                             <span class="text-orange-600 text-xs">🚩</span>
                             <span>${escapeHtml(p)}</span>
                         </span>
                     `).join('');
 
                     return `
-                        <div class="day-box rounded-xl border-2 p-3.5 shadow-2xs flex flex-col sm:flex-row sm:items-center gap-3">
+                        <div class="day-box rounded-xl border-2 p-3 shadow-2xs flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
                             <div class="shrink-0 flex sm:flex-col items-center justify-between sm:justify-center sm:w-24 sm:border-r border-stone-200 sm:pr-3">
-                                <span class="day-badge font-extrabold px-3 py-1 rounded-lg text-xs sm:text-sm">
+                                <span class="day-badge font-extrabold px-2.5 py-1 rounded-lg text-xs sm:text-sm">
                                     દિવસ ${toGujNum(idx + 1)}
                                 </span>
-                                ${dateStr ? `<span class="text-[11px] text-stone-600 font-bold mt-1">${dateStr}</span>` : ''}
+                                ${dateStr ? `<span class="text-[11px] text-stone-600 font-bold sm:mt-1">${dateStr}</span>` : ''}
                             </div>
-                            <div class="flex flex-wrap gap-2 items-center flex-grow">
+                            <div class="flex flex-wrap gap-1.5 sm:gap-2 items-center flex-grow">
                                 ${badges || `<span class="text-xs text-stone-400">-</span>`}
                             </div>
                         </div>
@@ -831,7 +1067,37 @@
             }
         }
 
-        // 6. DOWNLOAD HIGH-QUALITY PHOTO (PNG) & PDF
+        // 6. HIGH-QUALITY DESKTOP-PROPORTION EXPORT EVEN ON SMALL PHONES
+        async function captureHighResCanvas(bgColor) {
+            const sourceEl = document.getElementById('scheduleExportCanvas');
+            await document.fonts.ready;
+
+            // Clone offscreen at a crisp 720px width so phone downloads look like studio posters
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'fixed';
+            wrapper.style.left = '-9999px';
+            wrapper.style.top = '0';
+            wrapper.style.width = '720px';
+            wrapper.style.zIndex = '-1';
+
+            const clone = sourceEl.cloneNode(true);
+            clone.style.width = '720px';
+            clone.style.padding = '28px';
+            wrapper.appendChild(clone);
+            document.body.appendChild(wrapper);
+
+            try {
+                const canvas = await html2canvas(clone, {
+                    scale: 3,
+                    useCORS: true,
+                    backgroundColor: bgColor
+                });
+                return canvas;
+            } finally {
+                document.body.removeChild(wrapper);
+            }
+        }
+
         async function downloadPhoto() {
             const btn = document.getElementById('btnDownloadPng');
             const oldHtml = btn.innerHTML;
@@ -839,13 +1105,7 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>બને છે...</span>`;
 
             try {
-                const el = document.getElementById('scheduleExportCanvas');
-                await document.fonts.ready;
-                const canvas = await html2canvas(el, {
-                    scale: 3,
-                    useCORS: true,
-                    backgroundColor: null
-                });
+                const canvas = await captureHighResCanvas(null);
                 const link = document.createElement('a');
                 link.download = `Tirth-Yatra-Schedule.png`;
                 link.href = canvas.toDataURL('image/png');
@@ -866,13 +1126,7 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>બને છે...</span>`;
 
             try {
-                const el = document.getElementById('scheduleExportCanvas');
-                await document.fonts.ready;
-                const canvas = await html2canvas(el, {
-                    scale: 2.5,
-                    useCORS: true,
-                    backgroundColor: '#ffffff'
-                });
+                const canvas = await captureHighResCanvas('#ffffff');
                 const imgData = canvas.toDataURL('image/jpeg', 0.98);
                 const { jsPDF } = window.jspdf;
 
