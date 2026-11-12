@@ -11,7 +11,7 @@
 window.TIRTH_MASTER_LIST = [
   { name: "અયોધ્યા", image: "images/ayodhya.jpg" },
   { name: "ઋષિકેશ", image: "images/rishikesh.jpg" },
-  { name: "કાઠમંડુ", image: "images/kathmandu.jpg" },
+  { name: "કાઠમંડુ", image: "images/Kathmandu.jpg" },
   { name: "કાશી", image: "images/kashi.jpg" },
   { name: "કેદારનાથ", image: "images/kedarnath.jpg" },
   { name: "ખાણ ગામ", image: "images/khangam.jpg" },
