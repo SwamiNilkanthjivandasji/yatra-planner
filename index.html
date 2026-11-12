@@ -520,6 +520,61 @@ function renderPreview() {
 let previewTimer;
 function renderPreviewSoon() { clearTimeout(previewTimer); previewTimer = setTimeout(renderPreview, 200); }
 
+/* ---------- html2canvas ફિક્સ: Gujarati અક્ષરો નીચે ઊતરી જાય છે ----------
+   દરેક (weight, font) માટે બ્રાઉઝરની સાચી જગ્યા અને html2canvas ની જગ્યાનો ફરક માપી, અક્ષરો ઉપર ખસેડીએ છીએ. */
+const TEXT_RE = /[઀-૿A-Za-z0-9]/;
+async function probeTextShift(weight, family) {
+  const FS = 100, PAD = 30, text = 'દિવસ અયોધ્યા ૧૨૩ ABC';
+  const d = document.createElement('div');
+  d.style.cssText = `position:fixed;left:-10000px;top:0;padding:${PAD}px;background:#fff;color:#000;font-weight:${weight};font-family:${family};font-size:${FS}px;line-height:normal;white-space:nowrap;`;
+  const t = document.createElement('span'); t.textContent = text; d.appendChild(t);
+  const m = document.createElement('span'); m.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline'; d.appendChild(m);
+  document.body.appendChild(d);
+  try {
+    const dr = d.getBoundingClientRect(), mr = m.getBoundingClientRect();
+    const baseY = mr.bottom - dr.top;
+    const h2c = await html2canvas(d, { scale: 1, backgroundColor: '#fff', logging: false });
+    const W = h2c.width, H = h2c.height;
+    const nat = document.createElement('canvas'); nat.width = W; nat.height = H;
+    const c = nat.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, W, H); c.fillStyle = '#000';
+    c.font = `${weight} ${FS}px ${family}`; c.textBaseline = 'alphabetic'; c.fillText(text, PAD, baseY);
+    const span = (cv) => {
+      const px = cv.getContext('2d').getImageData(0, 0, W, H).data; let top = -1, bot = -1;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x += 2) if (px[(y * W + x) * 4] < 128) { if (top < 0) top = y; bot = y; break; }
+      return [top, bot];
+    };
+    const a = span(h2c), b = span(nat);
+    if (a[0] < 0 || b[0] < 0) return 0;
+    const v = ((a[0] - b[0]) + (a[1] - b[1])) / 2 / FS;
+    return Math.abs(v) > 0.6 ? 0 : v;      // બેહૂદું પરિણામ હોય તો સુધારો ન કરવો
+  } catch { return 0; } finally { d.remove(); }
+}
+
+function textNodesOf(root) {
+  const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), out = [];
+  while (tw.nextNode()) { const n = tw.currentNode; if (n.nodeValue.trim() && TEXT_RE.test(n.nodeValue)) out.push(n); }
+  return out;
+}
+async function measureShifts(root) {
+  const map = {};
+  for (const n of textNodesOf(root)) {
+    const cs = getComputedStyle(n.parentElement), k = cs.fontWeight + '|' + cs.fontFamily;
+    if (!(k in map)) map[k] = await probeTextShift(cs.fontWeight, cs.fontFamily);
+  }
+  return map;
+}
+function applyShifts(clonedRoot, map) {
+  const win = clonedRoot.ownerDocument.defaultView;
+  textNodesOf(clonedRoot).forEach(n => {
+    const el = n.parentElement, cs = win.getComputedStyle(el);
+    const sh = (map[cs.fontWeight + '|' + cs.fontFamily] || 0) * parseFloat(cs.fontSize);
+    if (Math.abs(sh) < 0.5) return;
+    const sp = clonedRoot.ownerDocument.createElement('span');
+    sp.style.cssText = `position:relative;top:${-sh}px`;
+    n.replaceWith(sp); sp.appendChild(n);
+  });
+}
+
 /* ---------- PDF ડાઉનલોડ ---------- */
 async function downloadPDF() {
   const pages = buildPages();
@@ -535,9 +590,12 @@ async function downloadPDF() {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
     const els = host.querySelectorAll('.pdf-page');
+    label.textContent = '⏳ અક્ષરોની ગોઠવણ તપાસાય છે...';
+    const shifts = await measureShifts(host);
     for (let i = 0; i < els.length; i++) {
       label.textContent = `⏳ પેજ ${guNum(i + 1)} / ${guNum(els.length)} બની રહ્યું છે...`;
-      const canvas = await html2canvas(els[i], { scale: 2.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
+      const canvas = await html2canvas(els[i], { scale: 2.5, useCORS: true, backgroundColor: '#ffffff', logging: false,
+        onclone: (doc, el) => applyShifts(el, shifts) });
       if (i > 0) pdf.addPage();
       pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
     }
