@@ -20,7 +20,6 @@ window.TIRTH_MASTER_LIST = [
   { name: "ચિત્રકૂટ", image: "images/chitrakoot.jpg" },
   { name: "છપૈયા", image: "images/chhapaiya.jpg" },
   { name: "જગન્નાથપુરી", image: "images/jagannathpuri.jpg" },
-  { name: "દ્વારકા", image: "images/dwarka.jpg" },
   { name: "નાથદ્વારા", image: "images/nathdwara.jpg" },
   { name: "નૈમિષારણ્ય", image: "images/naimisharanya.jpg" },
   { name: "પુષ્કર", image: "images/pushkar.jpg" },
