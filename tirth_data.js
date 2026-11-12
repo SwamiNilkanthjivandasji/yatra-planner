@@ -31,6 +31,12 @@ window.TIRTH_MASTER_LIST = [
   { name: "યમુનોત્રી", image: "images/yamunotri.jpg" },
   { name: "રામેશ્વરમ", image: "images/rameswaram.jpg" },
   { name: "વૃંદાવન", image: "images/vrindavan.jpg" },
+  { name: "જોશીમઠ", image: "images/joshimath.jpg" },
+  { name: "ગુપ્તકાશી", image: "images/guptakashi.jpg" },
+  { name: "ત્રિયુગી નારાયણ", image: "images/triyuginarayan.jpg" },
+  { name: "મુક્તિનાથ", image: "images/muktinath.jpg" },
+  { name: "જગન્નાથપુરી", image: "images/jagnathpuri.jpg" },
+  { name: "પોખરા", image: "images/pokhara.jpg" },
   { name: "હરિદ્વાર", image: "images/haridwar.jpg" }
 ];
 
